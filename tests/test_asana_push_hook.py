@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 import unittest
@@ -89,6 +90,31 @@ class PushHookTests(unittest.TestCase):
                    tool_input={"task_id": "123"}, tool_response={"content": [
                        {"type": "text", "text": json.dumps({"data": {"gid": "123", "notes": sha}})}]})
         self.assertEqual(self.event("Stop"), {})
+
+    def test_live_mcp_tool_name_acknowledges_readback(self):
+        sha = self.push()
+        self.event("PostToolUse", tool_name="Bash")
+        self.event("PostToolUse", tool_name="mcp__codex_apps__asana__get_task",
+                   tool_input={"task_id": "123"}, tool_response={
+                       "data": {"gid": "123", "notes": sha}})
+        self.assertEqual(self.event("Stop"), {})
+
+    def test_live_mcp_tool_name_tracks_completion(self):
+        self.event("PostToolUse", session_id="live-session",
+                   tool_name="mcp__codex_apps__asana__update_tasks",
+                   tool_input={"tasks": [{"task": "123", "completed": True}]})
+        self.event("PostToolUse", session_id="live-session",
+                   tool_name="mcp__codex_apps__asana__get_task",
+                   tool_input={"task_id": "123"}, tool_response={
+                       "data": {"gid": "123", "notes": "Verified", "completed": True}})
+        self.assertEqual(self.event("Stop", session_id="live-session").get("decision"), "block")
+
+    def test_registration_matches_live_mcp_tool_names(self):
+        config = json.loads((Path(__file__).resolve().parents[1] / "scripts/global-hooks.json").read_text())
+        groups = config["hooks"]["PostToolUse"]
+        for name in ["mcp__codex_apps__asana__get_task", "mcp__codex_apps__asana__update_tasks"]:
+            with self.subTest(name=name):
+                self.assertTrue(any(re.search(group.get("matcher", ".*"), name) for group in groups))
 
     def test_outage_blocks_once_without_infinite_continuation(self):
         self.push()
