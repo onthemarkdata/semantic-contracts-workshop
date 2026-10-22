@@ -7,6 +7,7 @@ evidence; the agent's existing Asana connector performs the actual update.
 import fcntl
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -95,12 +96,14 @@ def next_task_instruction(item):
         "If the current user has asked to stop, pause, cancel, or only report status, "
         "honor that request and do not start another task. Otherwise, when the current "
         "authorized work is ready for handoff, use the AI Agent Asana connection to "
-        "read the workshop parent task 1219726209116213 and the existing queue in "
-        "project 1219127286179178. Select and DO one next eligible task; do not merely "
+        "read the source tasks above and their parent/project to identify the relevant "
+        "AI Agent queue for the current work. Use project instructions and verified "
+        "task links; never assume an unrelated project is the queue. "
+        "Select and DO one next eligible task; do not merely "
         "recommend it or ask whether to proceed. Follow the user's explicit order, "
         "then recorded priority and dependencies. Read the selected task's acceptance "
         "criteria, dependencies, assignee, recent discussion and approval gates first. "
-        "It must be existing, incomplete, assigned to AI Agent, within this repository's "
+        "It must be existing, incomplete, assigned to AI Agent, within the current work's "
         "authorized scope, not already being handled by another agent, and unblocked. "
         "Read prerequisite tasks to verify completion; absence of dependency fields "
         "is not proof that there are none. A push or open PR does not complete a task "
@@ -116,14 +119,14 @@ def next_task_instruction(item):
     )
 
 
-def handle(root, event):
-    common = git_dir(root)
-    state_dir = common / "codex-asana-push"
-    state_dir.mkdir(mode=0o700, exist_ok=True)
+def handle(root, event, *, storage=None, scan_pushes=True, sessions=None):
+    common = git_dir(root) if scan_pushes else None
+    state_dir = storage if storage is not None else common / "codex-asana-push"
+    state_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
     with (state_dir / "lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         path = state_dir / "state.json"
-        events = push_events(common)
+        events = push_events(common) if common is not None else {}
         if path.exists():
             state = json.loads(path.read_text())
             if state.get("version") != 1:
@@ -142,7 +145,8 @@ def handle(root, event):
             state["seen"] = sorted(seen | events.keys())
 
         session_id = event.get("session_id")
-        awaiting = state.setdefault("completion_requests", {})
+        session_state = sessions if sessions is not None else state
+        awaiting = session_state.setdefault("completion_requests", {})
         confirmed = []
         # A successful write alone is insufficient: observe a real task readback.
         tool_name = event.get("tool_name", "")
@@ -168,7 +172,7 @@ def handle(root, event):
                         del state["pending"][key]
 
         # One slot per real Codex session; preserve it across resumes and later pushes.
-        one_ahead = state.setdefault("one_ahead", {})
+        one_ahead = session_state.setdefault("one_ahead", {})
         slot = one_ahead.get(session_id) if session_id else None
         if confirmed and session_id:
             if slot is None:
@@ -200,10 +204,45 @@ def handle(root, event):
         return result
 
 
+def global_handle(event, home):
+    """Resolve the active workspace and share one follow-up budget across projects."""
+    cwd = event.get("cwd")
+    if not isinstance(cwd, str) or not Path(cwd).is_absolute():
+        raise ValueError("Global Asana hook requires an absolute event cwd")
+    root = Path(cwd).resolve(strict=True)
+    probe = subprocess.run(["git", "-C", str(root), "rev-parse", "--show-toplevel"],
+                           capture_output=True, text=True, timeout=5)
+    is_git = probe.returncode == 0
+    if not is_git and "not a git repository" not in probe.stderr:
+        raise ValueError("Cannot inspect workspace Git state; check Git access manually")
+    state_home = home / "hook-state/otmd"
+    state_home.mkdir(parents=True, mode=0o700, exist_ok=True)
+    storage = None if is_git else state_home / "workspaces" / hashlib.sha256(str(root).encode()).hexdigest()
+    with (state_home / "sessions.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        path = state_home / "sessions.json"
+        sessions = json.loads(path.read_text()) if path.exists() else {}
+        # Preserve a previously consumed repository-local slot on migration.
+        if is_git:
+            old = git_dir(root) / "codex-asana-push/state.json"
+            if old.exists():
+                prior = json.loads(old.read_text())
+                for key in ("one_ahead", "completion_requests"):
+                    target = sessions.setdefault(key, {})
+                    for session, value in prior.get(key, {}).items():
+                        target.setdefault(session, value)
+        result = handle(root, event, storage=storage, scan_pushes=is_git, sessions=sessions)
+        temporary = path.with_suffix(".tmp")
+        temporary.write_text(json.dumps(sessions, indent=2) + "\n")
+        temporary.replace(path)
+        return result
+
+
 def main():
     event = json.load(sys.stdin)
     try:
-        result = handle(ROOT, event)
+        home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
+        result = global_handle(event, home) if "--global" in sys.argv else handle(ROOT, event)
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         # Surface failure instead of silently declaring Asana up to date.
         result = {"systemMessage": f"Asana push hook failed: {error}. Check Asana sync manually."}

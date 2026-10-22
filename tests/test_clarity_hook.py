@@ -71,7 +71,7 @@ class ClarityHookTests(unittest.TestCase):
         self.assertEqual(self.invoke({'hook_event_name': 'PostToolUse'}), {})
 
     def test_hook_config_covers_all_tools_and_remains_synchronous(self):
-        config = json.loads((ROOT / '.codex/hooks.json').read_text())
+        config = json.loads((ROOT / 'scripts/global-hooks.json').read_text())
         for event in hook.LOAD_EVENTS | {'PreToolUse', 'Stop'}:
             matches = [(group, handler) for group in config['hooks'][event]
                        for handler in group['hooks'] if 'clarity_hook.py' in handler['command']]

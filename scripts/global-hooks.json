@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/asana_push_hook.py\"",
+            "command": "{python} {hook_dir}/asana_push_hook.py --global",
             "timeout": 10,
             "statusMessage": "Checking pushed commits against Asana"
           }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/clarity_hook.py\"",
+            "command": "{python} {hook_dir}/clarity_hook.py --global",
             "timeout": 10,
             "statusMessage": "Applying Clarity to reader-facing text",
             "additionalContextLimit": 5000
@@ -30,18 +30,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/asana_push_hook.py\"",
+            "command": "{python} {hook_dir}/asana_push_hook.py --global",
             "timeout": 10,
             "statusMessage": "Checking pushed commits against Asana"
           }
         ],
-        "matcher": "^Bash$"
+        "matcher": "^(Bash|exec_command|functions.exec|functions.exec_command|write_stdin|functions.write_stdin)$"
       },
       {
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/clarity_hook.py\"",
+            "command": "{python} {hook_dir}/clarity_hook.py --global",
             "timeout": 10,
             "statusMessage": "Applying Clarity to reader-facing text",
             "additionalContextLimit": 5000
@@ -54,12 +54,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/asana_push_hook.py\"",
+            "command": "{python} {hook_dir}/asana_push_hook.py --global",
             "timeout": 10,
             "statusMessage": "Checking pushed commits against Asana"
           }
         ],
-        "matcher": "^Bash$|.*asana_get_task$|.*asana_update_tasks$"
+        "matcher": "^(Bash|exec_command|functions.exec|functions.exec_command|write_stdin|functions.write_stdin)$|.*asana_get_task$|.*asana_update_tasks$"
       }
     ],
     "Stop": [
@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/asana_push_hook.py\"",
+            "command": "{python} {hook_dir}/asana_push_hook.py --global",
             "timeout": 10,
             "statusMessage": "Checking pushed commits against Asana"
           }
@@ -77,7 +77,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/clarity_hook.py\"",
+            "command": "{python} {hook_dir}/clarity_hook.py --global",
             "timeout": 10,
             "statusMessage": "Applying Clarity to reader-facing text"
           }
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/clarity_hook.py\"",
+            "command": "{python} {hook_dir}/clarity_hook.py --global",
             "timeout": 10,
             "statusMessage": "Applying Clarity to reader-facing text",
             "additionalContextLimit": 5000
@@ -102,7 +102,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/clarity_hook.py\"",
+            "command": "{python} {hook_dir}/clarity_hook.py --global",
             "timeout": 10,
             "statusMessage": "Applying Clarity to reader-facing text",
             "additionalContextLimit": 5000

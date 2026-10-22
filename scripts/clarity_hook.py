@@ -1,6 +1,7 @@
 """Load Clarity for reader-facing text and request one final review per turn."""
 
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -29,11 +30,11 @@ REVIEW = (
 )
 
 
-def handle(root, event):
+def handle(root, event, *, skill_path=None):
     kind = event.get('hook_event_name')
     if kind not in LOAD_EVENTS | {'PreToolUse', 'Stop'}:
         return {}
-    skill = root / SKILL
+    skill = skill_path if skill_path is not None else root / SKILL
     try:
         source = skill.read_text()
         if not source.strip():
@@ -55,7 +56,9 @@ def handle(root, event):
 
 
 def main():
-    print(json.dumps(handle(ROOT, json.load(sys.stdin))))
+    home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex"))
+    skill = home / "skills/clarity/SKILL.md" if "--global" in sys.argv else None
+    print(json.dumps(handle(ROOT, json.load(sys.stdin), skill_path=skill)))
 
 
 if __name__ == '__main__':

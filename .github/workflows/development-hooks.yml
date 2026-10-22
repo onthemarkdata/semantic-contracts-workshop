@@ -2,12 +2,14 @@ name: Development hooks
 on:
   pull_request:
     paths:
-      - '.codex/hooks.json'
+      - 'scripts/global-hooks.json'
+      - 'scripts/install_global_hooks.py'
       - '.agents/**'
       - 'AGENTS.md'
       - 'scripts/*hook.py'
       - 'tests/test_*hook.py'
       - 'docs/*hook.md'
+      - 'docs/global-hooks.md'
       - '.github/workflows/development-hooks.yml'
 permissions:
   contents: read

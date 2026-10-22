@@ -61,7 +61,7 @@ The [Clarity hook](docs/clarity-hook.md) loads the skill into agent context and 
 
 ## Asana after a successful push
 
-After every successful push by an agent, update the relevant Asana task before reporting the work as finished. Executable Codex lifecycle hooks are configured in `.codex/hooks.json`; see [activation and behavior](docs/asana-push-hook.md). They detect push updates in this checkout's remote-tracking reflogs and retain pending commits until an Asana task readback confirms the full SHA. They require Codex's hook trust approval and an active agent session.
+After every successful push by an agent, update the relevant Asana task before reporting the work as finished. Executable Codex lifecycle hooks can be installed globally with `scripts/install_global_hooks.py`; see [activation and behavior](docs/asana-push-hook.md). They detect push updates in this checkout's remote-tracking reflogs and retain pending commits until an Asana task readback confirms the full SHA. They require Codex's hook trust approval and an active agent session.
 
 1. Verify the pushed branch and full commit SHA on the remote. Never report an unpushed commit as published.
 2. Read the relevant task, its acceptance criteria, dependencies and recent updates. Use the **AI Agent** Asana connection. Start from the workshop parent task below to find the correct workstream; do not put every change on the model task.
@@ -81,7 +81,7 @@ After the current work and its push records are verified, use the AI Agent Asana
 
 Do the task without asking a routine “should I continue?” question. Record the selection, work, validation and remaining blockers in Asana notes and verify the update. Use a separate branch/PR for another workstream. If no task qualifies, the queue is inaccessible, or ordering needs a user decision, report that condition. Honor explicit stop, pause, cancel and status-only requests. Do not invent tasks, remove dependencies, merge PRs or expand messaging permissions.
 
-The hook requests at most one follow-up per Codex session; follow-up pushes still require Asana sync but do not start another task. See [one-ahead behavior](docs/asana-push-hook.md#one-ahead).
+The global hook requests at most one follow-up per Codex session across working directories; follow-up pushes still require Asana sync but do not start another task. See [one-ahead behavior](docs/asana-push-hook.md#one-ahead).
 
 Do not put Asana credentials in the repository, workshop containers or participant setup. The hook prompts the agent to use its existing connector. It does not run an independent background service or a GitHub workflow. Do not delete hook state to silence a pending update.
 
