@@ -17,6 +17,8 @@ Codex skips untrusted definitions. Installation does not approve them. See the [
 - `PostToolUse` for `asana_get_task` acknowledges a pending commit only when the returned task ID matches the request and the task notes contain that full SHA. A write response alone does not clear it.
 - `Stop` requests another agent turn when a push still needs an update. If a turn has already been continued by any Stop hook, it reports the pending state and retains it for the next session. This prevents repeated continuation during an outage.
 
+The matcher and handler accept both the live MCP names (`asana__get_task`, `asana__update_tasks`) and the single-underscore aliases exposed to the agent. Regression tests cover both forms.
+
 The hooks verify the presence of the commit in task notes. The agent still evaluates the correct task, evidence, acceptance criteria and dependencies according to `AGENTS.md`. A multi-commit push is represented by its before/after range; the agent records the relevant commits in its task update.
 
 Push state is stored under the repository's Git common directory in `codex-asana-push/state.json`, with a file lock for concurrent hook calls. Projectless state and the session-wide follow-up budget live under `$CODEX_HOME/hook-state/otmd` (normally `~/.codex/hook-state/otmd`). The hook uses the event’s working directory to find the active repository; it does not scan other checkouts. These files are not tracked by Git. No credentials or full tool responses are stored there. The hook never reads a token, calls Asana directly, or starts another agent process.

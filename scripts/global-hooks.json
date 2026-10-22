@@ -59,7 +59,7 @@
             "statusMessage": "Checking pushed commits against Asana"
           }
         ],
-        "matcher": "^(Bash|exec_command|functions.exec|functions.exec_command|write_stdin|functions.write_stdin)$|.*asana_get_task$|.*asana_update_tasks$"
+        "matcher": "^(Bash|exec_command|functions.exec|functions.exec_command|write_stdin|functions.write_stdin)$|.*asana_{1,2}get_task$|.*asana_{1,2}update_tasks$"
       }
     ],
     "Stop": [

@@ -149,7 +149,9 @@ def handle(root, event, *, storage=None, scan_pushes=True, sessions=None):
         awaiting = session_state.setdefault("completion_requests", {})
         confirmed = []
         # A successful write alone is insufficient: observe a real task readback.
-        tool_name = event.get("tool_name", "")
+        # MCP lifecycle names use a double separator; the tool API exposed to
+        # the agent and older fixtures may use a single underscore instead.
+        tool_name = event.get("tool_name", "").replace("asana__", "asana_")
         if kind == "PostToolUse" and tool_name.endswith("asana_update_tasks") and session_id:
             requested_completions = {
                 str(task.get("task", "")) for task in event.get("tool_input", {}).get("tasks", [])
