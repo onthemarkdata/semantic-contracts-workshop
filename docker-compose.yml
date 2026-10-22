@@ -13,16 +13,18 @@ services:
       etl:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "pgrep", "-f", "sleep infinity"]
+      test: ["CMD", "test", "-f", "/tmp/workshop-ready"]
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 30s
+      start_period: 5m
     command: bash -c "
+        rm -f /tmp/workshop-ready &&
         apt-get update &&
         apt-get install -y docker.io postgresql-client &&
         pip install -r /workspace/requirements.txt &&
-        sleep infinity
+        touch /tmp/workshop-ready &&
+        exec sleep infinity
       "
 
   etl:

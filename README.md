@@ -87,13 +87,15 @@ Please refer to [GitHub Codespaces quickstart guide](https://docs.github.com/en/
 
 1. Ensure you have [Docker Desktop](https://www.docker.com/get-started/) and [Visual Studio Code](https://code.visualstudio.com/download) installed on your machine.
    
-2. Clone the repo to your local machine: `git clone https://github.com/gabledata/oreilly_book.git`
+2. Clone this workshop repository to your local machine: `git clone https://github.com/onthemarkdata/semantic-contracts-workshop.git` (repository access is required).
    
 3. In your terminal, go to the cloned repo via `cd <path-to-cloned-repo>`
    
-4. Ensure Docker Desktop is running and in your terminal enter the command `docker compose up`
+4. Ensure Docker Desktop is running and in your terminal enter the command `docker compose up -d --wait --wait-timeout 600`
 
-    - If you need to completely reset the container, run `docker compose down -v --remove-orphans && docker compose up` (note: this will spin down and delete data for all containers, so bne careful if you have other containers outside this project)
+    - Wait for this command to succeed before opening the notebook or running tests. Check `docker compose ps -a`: PostgreSQL and the devcontainer should be healthy, and ETL should have exited with code 0. If startup fails, inspect `docker compose logs devcontainer etl postgres`.
+
+    - To stop the environment while keeping its database volume, run `docker compose down`. For a repeatable exercise reset, follow [Reset the workshop database](#reset-the-workshop-database).
 
 5. Docker will then run the configuration files to setup Python, a Postgres database, install requirements, and seeding the database with data (this will 1-3 minutes).
 
@@ -104,6 +106,30 @@ Please refer to [GitHub Codespaces quickstart guide](https://docs.github.com/en/
 8. Select the container that includes `devcontainer-1` to attach to, which will then launch a new VS Code Window (give it a couple minutes to connect and setup).
    
 9.  Go to `Start > Open` in the menu and go to the path `../workspace` (note that Docker mounts the project in a folder called `workspace` in the root directory).
+
+### Reset the workshop database
+
+Run these commands inside the devcontainer, from `/workspace`, to rebuild the database from the current migration files. Save any exercise edits first. The reset deletes the workshop tables and their data, then reloads the checked-in museum sample; it does not delete Docker volumes. The seed script requires the original `object_images` columns, which must be present before you run it.
+
+```bash
+cd /workspace/data_contract_components/data_assets
+alembic downgrade base
+alembic upgrade head
+python seed_db.py
+cd /workspace
+python -m unittest data_contract_components/prevention/test_data_contract_violations.py -v
+```
+
+Run the downgrade before switching away from a migration that creates additional exercise tables, so its downgrade can remove them. After switching, run the upgrade and seed commands for the restored version. The seed script expects the original `object_images` columns; restore them before seeding after the intentional breaking change.
+
+Open `run_sql_queries_here.ipynb`, select `/usr/local/bin/python`, run the connection cell, and replace `YOUR QUERY HERE` with:
+
+```sql
+SELECT COUNT(*) AS objects, COUNT(DISTINCT object_id) AS unique_ids
+FROM object;
+```
+
+Both counts should be **3,025**. The original contract tests should pass. This reset is for the disposable workshop database, not a production migration procedure.
 
 # 📕 Chapter 7: Implementing Data Contracts
 
@@ -534,7 +560,7 @@ Finally, the last component is detection, as highlighted in the directory tree s
 
 At a high level, `docker-compose.test.yml` setups the necessary infra and installs requirements, runs the database migration file, and then performs a unit test check via the following command that then exports its log to a folder on the container that can be surfaced in a pull request comment:
 ```bash
-python -m unittest data_contract_components/prevention/test_data_contract_violations.py -v > /workspace/test_output.log 2>&1`
+python -m unittest data_contract_components/prevention/test_data_contract_violations.py -v > /workspace/test_output.log 2>&1
 ```
 
 Specifically, Figure 7-5, illustrates how `test_data_contract_violations.py` works within the CI/CD workflow on a GitHub pull request that wants to merge onto `main`. Where the unit test fails if the returned violations list from either `contract_coverage_detector.py` or `contract_violation_detector.py` has a length greater than zero.
@@ -600,11 +626,13 @@ Specifically, you received a request to normalize the `object_images` table by u
 │        object_images               │     │       object_images             │
 ├────────────────────────────────────┤     ├─────────────────────────────────┤
 │ PK: object_id (Integer)            │     │ PK: object_id (Integer)         │
-│     primary_image (Text)           │ --> │     image (Text)                │
+│     primary_image (Text)           │ --> │ PK: image (Text)                │
 │     additional_images (ARRAY[text])│     |     is_primary_image (Boolean)  |
 │     created_at (DateTime)          │     |     created_at (DateTime)       │
 └────────────────────────────────────┘     └─────────────────────────────────┘
 ```
+
+Use `(object_id, image)` as the composite primary key: each object can have multiple image URLs, and the same object/URL pair cannot be inserted twice.
 
 The request makes sense as this aligns with the goals of this database and will make working with the images data more straightforward. In addition, since it's early days of the development, you are only aware of the backed software engineering team needing this database that's not even connected to the application yet. Thus, you also believe it makes sense to drop the table completely so you implement the most up-to-date version of `object_images` within the transactional database.
 
@@ -659,6 +687,7 @@ Now in a development branch, within `data_assets/db_migrations/versions/00e9b337
         sa.Column(
             "image",
             sa.Text,
+            primary_key=True,
             comment=column_comment_dict["primary_image"]
         ),
         sa.Column(
@@ -810,7 +839,7 @@ Before reading further, attempt to create your own data contract spec for `objec
     "name": "object-images-normalized-contract-spec",
     "namespace": "met-museum-data",
     "dataAssetResourceName": "postgresql://postgres:5432/postgres.object_images_normalized",
-    "doc": "Data contract for the object_images_noralized table containing image URLs and metadata for museum objects and creation timestamps.",
+    "doc": "Data contract for the object_images_normalized table containing image URLs and metadata for museum objects and creation timestamps.",
     "owner": {
       "name": "Data Engineering Team",
       "email": "data-eng@museum.org"
@@ -823,7 +852,7 @@ Before reading further, attempt to create your own data contract spec for `objec
       "table_name": "object_images_normalized",
       "properties": {
         "object_id": {
-          "description": "Identifying number for each artwork (unique, can be used as key field)",
+          "description": "Identifying number for each artwork; paired with image to identify an image row",
           "examples": [437133],
           "constraints": {
             "primaryKey": true,
@@ -837,9 +866,9 @@ Before reading further, attempt to create your own data contract spec for `objec
           "description": "URL to the image of an object (JPEG)",
           "examples": ["https://images.metmuseum.org/.../DT1234.jpg"],
           "constraints": {
-            "primaryKey": false,
+            "primaryKey": true,
             "data_type": "text",
-            "is_nullable": true,
+            "is_nullable": false,
             "is_updatable": true
           }
         },
@@ -958,6 +987,7 @@ Before reading further, attempt to update `data_contract_components/data_assets/
         sa.Column(
             "image",
             sa.Text,
+            primary_key=True,
             comment="URL to the image of an object (JPEG)"
         ),
         sa.Column(

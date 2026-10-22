@@ -2,6 +2,8 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
   "overrideCommand": false,
+  "waitFor": "postStartCommand",
+  "postStartCommand": ["timeout", "600", "sh", "-c", "until test -f /tmp/workshop-ready; do sleep 1; done"],
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {}
   },
