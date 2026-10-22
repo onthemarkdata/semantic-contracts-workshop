@@ -1,0 +1,55 @@
+# Also runs independently: docker compose -f compose.models.yaml up -d model-init
+services:
+  model-runner:
+    image: docker/model-runner:v1.2.9@sha256:60e6a14d8cc331fab3e51d7b78bba98274b4d28573f4e0b345e475d52d167869
+    volumes:
+      - model-cache:/models
+    networks:
+      - model-network
+    # CPU inference, including on Docker Desktop. No host model service required.
+    cpus: 4
+    mem_limit: 6g
+    memswap_limit: 6g
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:12434/engines/status"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+
+  model-init:
+    image: &client-image python:3.12-slim-bookworm@sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70
+    depends_on:
+      model-runner:
+        condition: service_healthy
+    environment: &client-environment
+      MODEL_RUNNER_URL: http://model-runner:12434
+      PYTHONUNBUFFERED: "1"
+    volumes: &client-volumes
+      - ./scripts/model_client.py:/client/model_client.py:ro
+      - ./models/gemma.lock.json:/client/gemma.lock.json:ro
+    networks:
+      - model-network
+    command: ["python", "/client/model_client.py", "init"]
+    restart: "no"
+
+  model-check:
+    image: *client-image
+    profiles: [tools]
+    depends_on:
+      model-init:
+        condition: service_completed_successfully
+    environment: *client-environment
+    volumes: *client-volumes
+    networks:
+      - model-network
+    entrypoint: ["python", "/client/model_client.py"]
+    command: ["check"]
+
+volumes:
+  model-cache:
+
+networks:
+  model-network:

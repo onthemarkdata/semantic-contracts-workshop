@@ -64,6 +64,8 @@ Though these are prerequisites, please note that we will provide technical instr
 
 # 💻 Installation and Setup
 
+For the semantic-contracts workshop's Gemma model, machine requirements, and current validation status, see [Workshop model setup](docs/model-runner.md). The cold model download adds about 4.09 GB to the original setup below.
+
 This tutorial expects you to create pull requests, especially around the CI/CD components for contract violation detection and alerting. Thus, we strongly encourage first forking the repo
 
 From there you have two options: 1) running the environment via GitHub codespaces (easiest), or cloning the repo and running via Docker and VS Code dev container (more control).

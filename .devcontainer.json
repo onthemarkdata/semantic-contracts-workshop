@@ -1,7 +1,11 @@
 {
-  "dockerComposeFile": "docker-compose.yml",
+  "dockerComposeFile": ["docker-compose.yml", "docker-compose.workshop.yml"],
   "service": "devcontainer",
   "overrideCommand": false,
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb"
+  },
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {}
   },

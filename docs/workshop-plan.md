@@ -2,7 +2,9 @@
 
 Documentation-only proposal · 20 October 2026
 
-Mark: review the two-loop agenda, proposed time budgets and benchmark targets, then prioritize the first baseline-validation PR. You own the workshop and review decisions. Model, telemetry UI, vocabulary subset, exact questions, distribution permissions and budget remain open.
+Implementation update · 22 October 2026: Gemma 4 E2B Q4_K_M from Docker Hub is selected for the first runtime trial. The Compose integration, provenance, local CPU measurements and remaining Codespaces gate are recorded in [Workshop model setup](model-runner.md). This advances the model task; it does not complete baseline validation, viewer selection or the full benchmark gate below.
+
+Mark: review the two-loop agenda, proposed time budgets and benchmark targets, then prioritize the first baseline-validation PR. You own the workshop and review decisions. Model acceptance on Codespaces, telemetry UI, vocabulary subset, exact questions, distribution permissions and budget remain open.
 
 The proposed work window is **21–22 October 2026, America/Los_Angeles**; it is not an external deadline. Helsinki is the first delivery. Keep the curriculum reusable for the November O'Reilly version.
 
@@ -154,6 +156,6 @@ Keep the trace UI lightweight. Reject candidates that require cloud sign-in, hea
 - [Met Open Access documentation](https://metmuseum.github.io/) describes selected metadata under CC0. Image rights are separate; this exercise uses local metadata and must not assume every linked image is reusable.
 - The original repository contains no explicit LICENSE/COPYING/NOTICE in the inspected tree. Preserve its README, attribution and history; Mark reviews permission before broader redistribution. Do not invent a source license or infer one from public availability.
 
-## What this PR changes
+## Scope of the original planning PR
 
-This PR changes documentation only. The repository remains private, Actions disabled, and Pages disabled. No runtime, vocabulary import, participant invitations, spending changes, or workshop delivery claims are made here.
+The original planning PR changed documentation only and left the repository private, Actions disabled, and Pages disabled. It did not authorize vocabulary imports, participant invitations, spending changes, or workshop delivery claims. Subsequent runtime implementation is tracked in the update above.

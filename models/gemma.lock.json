@@ -1,0 +1,16 @@
+{
+  "model": "docker.io/ai/gemma4@sha256:0a4cfc34b9fe5dbbe754654f0ccbc6952e26c3d7d28c9ae0f3690177d82e16c6",
+  "tag_at_verification": "ai/gemma4:e2b-q4_K_M",
+  "verified_on": "2026-10-22",
+  "publisher": "Docker (verified publisher on Docker Hub)",
+  "upstream": "unsloth/gemma-4-E2B-it-GGUF",
+  "format": "gguf",
+  "quantization": "Q4_K_M",
+  "license": "Apache-2.0",
+  "download_bytes": 4092392352,
+  "context_size": 4096,
+  "threads": 4,
+  "max_tokens": 128,
+  "request_timeout_seconds": 600,
+  "source_url": "https://hub.docker.com/r/ai/gemma4"
+}

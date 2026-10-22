@@ -1,0 +1,12 @@
+include:
+  - compose.models.yaml
+
+services:
+  devcontainer:
+    networks:
+      - model-network
+    environment:
+      MODEL_RUNNER_URL: http://model-runner:12434
+    depends_on:
+      model-init:
+        condition: service_completed_successfully
