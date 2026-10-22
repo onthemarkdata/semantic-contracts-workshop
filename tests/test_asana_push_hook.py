@@ -16,7 +16,7 @@ class PushHookTests(unittest.TestCase):
         base = Path(self.temp.name)
         self.repo = base / "repo"
         self.remote = base / "remote.git"
-        subprocess.run(["git", "init", "--bare", str(self.remote)], check=True, capture_output=True)
+        subprocess.run(["git", "init", "--bare", "-b", "main", str(self.remote)], check=True, capture_output=True)
         subprocess.run(["git", "init", "-b", "main", str(self.repo)], check=True, capture_output=True)
         self.git("config", "user.name", "Hook Test")
         self.git("config", "user.email", "test@example.invalid")
