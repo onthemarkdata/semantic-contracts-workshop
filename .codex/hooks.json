@@ -1,0 +1,56 @@
+{
+  "description": "Keep pushed workshop commits recorded in Asana using the existing connector.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/asana_push_hook.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking pushed commits against Asana"
+          }
+        ],
+        "matcher": "startup|resume"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/asana_push_hook.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking pushed commits against Asana"
+          }
+        ],
+        "matcher": "^Bash$"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/asana_push_hook.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking pushed commits against Asana"
+          }
+        ],
+        "matcher": "^Bash$|.*asana_get_task$"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/asana_push_hook.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking pushed commits against Asana"
+          }
+        ]
+      }
+    ]
+  }
+}
