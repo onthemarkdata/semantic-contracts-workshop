@@ -33,7 +33,7 @@ Download progress alone does not pass the startup gate. Registry failures, incom
 
 The runner exposes port 12434 only on the Compose network. The model services have no Docker socket or full repository mount. This is infrastructure for a future agent; it does not implement the agent, SQL tool, evaluator or gold-answer isolation.
 
-This explicit runner service meets the requirement to run inside Compose without a host model installation. Docker's documented end-user path uses `docker model install-runner`; the Hub runtime image is described as an implementation component. Treat this Compose integration as pending Codespaces validation, not as a Docker-supported deployment recipe.
+This explicit runner service meets the requirement to run inside Compose without a host model installation. Docker's documented end-user path uses `docker model install-runner`; the Hub runtime image is described as an implementation component. Mark has validated basic inference in Codespaces using this integration; that test does not establish a Docker support commitment for the deployment recipe.
 
 ## Run the model independently
 
@@ -61,6 +61,15 @@ The client reads `MODEL_RUNNER_URL=http://model-runner:12434` and the checked-in
 
 ## Validation and remaining gates
 
+Mark confirmed the container was running in GitHub Codespaces on branch `codex/gemma-model-runner`, commit `35f882a739104ab5120b4b691e80852249787530`, and supplied these successful CLI results on 22 October 2026:
+
+| Codespaces prompt | Elapsed seconds | Input / output tokens | Finish reason |
+| --- | ---: | ---: | --- |
+| Explain a database data contract | 2.420 | 21 / 29 | `stop` |
+| Review four ambiguous museum records | 8.511 | 171 / 62 | `stop` |
+
+Both responses identify the pinned model digest. Mark accepted the runtime as working. Basic Codespaces inference is validated; actual Codespaces machine size, peak RAM, setup duration and the full agent workload have not been measured in the supplied output. The configured machine request remains four cores and 16 GB.
+
 Local CPU validation passed on 22 October 2026. The test host was ARM64 Docker Desktop with 8,217,059,328 bytes (about 7.65 GiB) allocated to its Linux VM, a four-CPU runner quota, and the existing database and devcontainer running. It is not equivalent to a native AMD64 Codespace. No trace viewer or agent workload was running.
 
 | Check | Observed result |
@@ -76,7 +85,7 @@ Local CPU validation passed on 22 October 2026. The test host was ARM64 Docker D
 
 The smaller post-restart cgroup value does **not** mean the model needs only 3.12 GiB: previously cached file pages can be charged outside the recreated cgroup. Use the process RSS and initial peak when planning headroom. The 6 GiB limit passed these short checks; full-context and agent workloads still need validation. The initial template configuration produced deliberation instead of a final answer; the final configuration explicitly enables Jinja and disables thinking, and passed the stricter probe.
 
-Docker Desktop hides this runner from container listings; its inherited `com.docker.desktop.service` label appears to be responsible. On the tested installation (Compose 5.1.1) this causes Compose to report `model-init is missing dependency model-runner`. Local runtime testing therefore started the known test containers explicitly and used `run --no-deps` for checks. The native Linux Compose dependency path remains unverified; do not describe this setup as working on Codespaces until it passes there. The available GitHub CLI credentials lacked the `codespace` scope, so no Codespace was created or tested.
+Docker Desktop hides this runner from container listings; its inherited `com.docker.desktop.service` label appears to be responsible. On the tested installation (Compose 5.1.1) this causes Compose to report `model-init is missing dependency model-runner`. Local runtime testing therefore started the known test containers explicitly and used `run --no-deps` for checks. The agent's GitHub CLI credentials lacked the `codespace` scope; the subsequent Codespaces validation above was performed by Mark.
 
 Before workshop acceptance, run a fresh 16 GB Codespace and record cold startup time, warm startup time, memory peak, and representative query latency with the database and selected viewer running. Then run the frozen evaluation and verify it fits the workshop time budget. Three short smoke prompts cannot establish that ten agent questions will finish on time. Only consider 8 GB after a full workload passes with memory headroom.
 
