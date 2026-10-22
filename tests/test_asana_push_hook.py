@@ -127,5 +127,104 @@ class PushHookTests(unittest.TestCase):
         self.assertEqual(self.event("Stop"), {})
 
 
+    def sync_in_session(self, sha, session="session-a", task="123"):
+        return self.event("PostToolUse", session_id=session,
+                          tool_name="mcp__codex_apps__asana_get_task",
+                          tool_input={"task_id": task}, tool_response={
+                              "data": {"gid": task, "notes": sha}})
+
+    def test_one_ahead_starts_after_verified_sync(self):
+        sha = self.push()
+        self.sync_in_session(sha)
+        result = self.event("Stop", session_id="session-a")
+        self.assertEqual(result["decision"], "block")
+        self.assertIn("Select and DO one next eligible task", result["reason"])
+        self.assertIn(sha, result["reason"])
+        self.assertIn("Source tasks: 123", result["reason"])
+        self.assertIn("approval gates", result["reason"])
+        self.assertIn("only report status", result["reason"])
+        self.assertIn("If no eligible task exists", result["reason"])
+
+    def test_one_ahead_waits_for_all_pending_pushes(self):
+        first = self.push()
+        second = self.push()
+        self.sync_in_session(first)
+        result = self.event("Stop", session_id="session-a")
+        self.assertIn("Successful Git pushes need", result["reason"])
+        self.assertNotIn("One-ahead policy", result["reason"])
+        self.sync_in_session(second, task="456")
+        result = self.event("Stop", session_id="session-a")
+        self.assertIn("Source tasks: 123, 456", result["reason"])
+
+    def test_one_ahead_does_not_chain_after_followup_push(self):
+        self.sync_in_session(self.push())
+        self.event("Stop", session_id="session-a")
+        self.sync_in_session(self.push())
+        self.assertEqual(self.event("Stop", session_id="session-a"), {})
+        state = json.loads((self.repo / '.git/codex-asana-push/state.json').read_text())
+        self.assertEqual(state['one_ahead']['session-a']['status'], 'requested')
+        self.assertEqual(state['pending'], {})
+
+    def test_one_ahead_survives_resume_without_rearming(self):
+        self.sync_in_session(self.push())
+        self.event("SessionStart", session_id="session-a")
+        self.assertEqual(self.event("Stop", session_id="session-a")["decision"], "block")
+        self.event("SessionStart", session_id="session-a")
+        self.assertEqual(self.event("Stop", session_id="session-a"), {})
+
+    def test_one_ahead_has_its_own_bounded_stop_budget(self):
+        self.sync_in_session(self.push())
+        result = self.event("Stop", session_id="session-a", stop_hook_active=True)
+        self.assertEqual(result["decision"], "block")
+        self.assertEqual(self.event("Stop", session_id="session-a", stop_hook_active=True), {})
+
+    def test_one_ahead_sessions_do_not_consume_each_others_slot(self):
+        self.sync_in_session(self.push(), session="session-a")
+        self.assertEqual(self.event("Stop", session_id="session-b"), {})
+        self.sync_in_session(self.push(), session="session-b")
+        self.assertIn("One-ahead policy", self.event("Stop", session_id="session-b")["reason"])
+        self.assertIn("One-ahead policy", self.event("Stop", session_id="session-a")["reason"])
+
+    def test_missing_session_id_does_not_create_global_one_ahead_slot(self):
+        self.readback(self.push())
+        self.assertEqual(self.event("Stop", session_id="session-a"), {})
+        state = json.loads((self.repo / '.git/codex-asana-push/state.json').read_text())
+        self.assertEqual(state['one_ahead'], {})
+
+    def test_reads_without_new_push_evidence_do_not_queue_next_task(self):
+        self.sync_in_session('a' * 40)
+        self.assertEqual(self.event("Stop", session_id="session-a"), {})
+
+
+    def completion_request(self, task="123"):
+        return self.event("PostToolUse", session_id="session-a", tool_name="mcp__asana_update_tasks",
+                          tool_input={"tasks": [{"task": task, "completed": True}]}, tool_response={})
+
+    def completion_readback(self, task="123", completed=True):
+        return self.event("PostToolUse", session_id="session-a", tool_name="mcp__asana_get_task",
+                          tool_input={"task_id": task}, tool_response={
+                              "data": {"gid": task, "notes": "Done with evidence", "completed": completed}})
+
+    def test_completion_without_push_requires_write_then_readback(self):
+        self.completion_request()
+        self.assertEqual(self.event("Stop", session_id="session-a"), {})
+        self.completion_readback()
+        self.assertIn("verified task completion", self.event("Stop", session_id="session-a")["reason"])
+
+    def test_incomplete_readback_does_not_start_next_task(self):
+        self.completion_request()
+        self.completion_readback(completed=False)
+        self.assertEqual(self.event("Stop", session_id="session-a"), {})
+
+    def test_old_completed_task_does_not_start_next_task(self):
+        self.completion_readback()
+        self.assertEqual(self.event("Stop", session_id="session-a"), {})
+
+    def test_different_task_cannot_acknowledge_completion_request(self):
+        self.completion_request()
+        self.completion_readback(task="456")
+        self.assertEqual(self.event("Stop", session_id="session-a"), {})
+
+
 if __name__ == "__main__":
     unittest.main()

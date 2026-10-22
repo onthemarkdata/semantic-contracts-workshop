@@ -75,6 +75,14 @@ Asana task entry points:
 - Workshop parent: `1219726209116213` — https://app.asana.com/0/0/1219726209116213/f
 - Model and trace-viewer benchmark: `1219726078017588` — https://app.asana.com/0/0/1219726078017588/f
 
+## One-ahead policy
+
+After the current work and its push records are verified, use the AI Agent Asana connection to carry out one existing, eligible next task in the workshop queue. Follow the user's explicit order, then recorded priorities and dependencies. Read the task's acceptance criteria, assignee, prerequisites and recent discussion before starting. Choose incomplete work assigned to AI Agent that is within this repository's authorized scope, unblocked and not already being handled by another agent. Preserve review gates; a push alone does not complete a prerequisite.
+
+Do the task without asking a routine “should I continue?” question. Record the selection, work, validation and remaining blockers in Asana notes and verify the update. Use a separate branch/PR for another workstream. If no task qualifies, the queue is inaccessible, or ordering needs a user decision, report that condition. Honor explicit stop, pause, cancel and status-only requests. Do not invent tasks, remove dependencies, merge PRs or expand messaging permissions.
+
+The hook requests at most one follow-up per Codex session; follow-up pushes still require Asana sync but do not start another task. See [one-ahead behavior](docs/asana-push-hook.md#one-ahead).
+
 Do not put Asana credentials in the repository, workshop containers or participant setup. The hook prompts the agent to use its existing connector. It does not run an independent background service or a GitHub workflow. Do not delete hook state to silence a pending update.
 
 ## Tailscale administration

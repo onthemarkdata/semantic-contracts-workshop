@@ -85,6 +85,37 @@ def reminder(pending):
     )
 
 
+
+def next_task_instruction(item):
+    sources = ", ".join(item["task_ids"])
+    trigger = f"verified push {item['sha']}" if item.get("sha") else "verified task completion"
+    return (
+        "One-ahead policy: current work has a verified Asana readback. "
+        f"Source tasks: {sources}. Trigger: {trigger}. "
+        "If the current user has asked to stop, pause, cancel, or only report status, "
+        "honor that request and do not start another task. Otherwise, when the current "
+        "authorized work is ready for handoff, use the AI Agent Asana connection to "
+        "read the workshop parent task 1219726209116213 and the existing queue in "
+        "project 1219127286179178. Select and DO one next eligible task; do not merely "
+        "recommend it or ask whether to proceed. Follow the user's explicit order, "
+        "then recorded priority and dependencies. Read the selected task's acceptance "
+        "criteria, dependencies, assignee, recent discussion and approval gates first. "
+        "It must be existing, incomplete, assigned to AI Agent, within this repository's "
+        "authorized scope, not already being handled by another agent, and unblocked. "
+        "Read prerequisite tasks to verify completion; absence of dependency fields "
+        "is not proof that there are none. A push or open PR does not complete a task "
+        "or waive a review gate. Reuse an independent branch/PR for a separate workstream. "
+        "Record the selected task, work performed, validation, outcome and remaining "
+        "blockers in the relevant Asana notes, then read them back. Apply Clarity to "
+        "the files and messages. Do not merge, invent tasks, change assignees, remove "
+        "dependencies, or send messages without existing authorization. If no eligible "
+        "task exists, the queue is inaccessible, or ordering requires a user decision, "
+        "report the concrete blocker instead of guessing. This is one additional task "
+        "for this session, not a recursive queue-draining loop. Its pushes still need "
+        "normal Asana synchronization but must not start a second follow-up task."
+    )
+
+
 def handle(root, event):
     common = git_dir(root)
     state_dir = common / "codex-asana-push"
@@ -110,33 +141,63 @@ def handle(root, event):
                     added = True
             state["seen"] = sorted(seen | events.keys())
 
+        session_id = event.get("session_id")
+        awaiting = state.setdefault("completion_requests", {})
+        confirmed = []
         # A successful write alone is insufficient: observe a real task readback.
         tool_name = event.get("tool_name", "")
+        if kind == "PostToolUse" and tool_name.endswith("asana_update_tasks") and session_id:
+            requested_completions = {
+                str(task.get("task", "")) for task in event.get("tool_input", {}).get("tasks", [])
+                if task.get("completed") is True and str(task.get("task", "")).isdigit()
+            }
+            if requested_completions:
+                awaiting[session_id] = sorted(set(awaiting.get(session_id, [])) | requested_completions)
         if kind == "PostToolUse" and tool_name.endswith("asana_get_task"):
             requested = str(event.get("tool_input", {}).get("task_id", ""))
             for task in task_records(event.get("tool_response")):
                 if str(task["gid"]) != requested:
                     continue
+                if session_id and requested in awaiting.get(session_id, []) and task.get("completed") is True:
+                    confirmed.append({"sha": None, "task_id": requested})
+                    awaiting[session_id].remove(requested)
                 for key, item in list(state["pending"].items()):
                     if re.search(r"(?<![0-9a-f])" + item["sha"] + r"(?![0-9a-f])", task["notes"]):
                         state["verified"][key] = {**item, "task_id": requested}
+                        confirmed.append({"sha": item["sha"], "task_id": requested})
                         del state["pending"][key]
+
+        # One slot per real Codex session; preserve it across resumes and later pushes.
+        one_ahead = state.setdefault("one_ahead", {})
+        slot = one_ahead.get(session_id) if session_id else None
+        if confirmed and session_id:
+            if slot is None:
+                slot = {"status": "pending", "sha": confirmed[0]["sha"], "task_ids": []}
+                one_ahead[session_id] = slot
+            if slot["status"] == "pending":
+                slot["task_ids"] = sorted(set(slot["task_ids"]) | {x["task_id"] for x in confirmed})
+
+        pending = state["pending"]
+        result = {}
+        if pending:
+            message = reminder(pending)
+            if kind == "Stop":
+                if event.get("stop_hook_active"):
+                    result = {"systemMessage": "Asana sync remains pending. " + message}
+                else:
+                    result = {"decision": "block", "reason": message}
+            elif kind == "SessionStart" or (kind == "PostToolUse" and added):
+                result = {"hookSpecificOutput": {"hookEventName": kind, "additionalContext": message}}
+        elif kind == "Stop" and slot and slot["status"] == "pending":
+            # This has its own single-use budget: sync or Clarity may already have
+            # continued the turn. Persist consumption before issuing the prompt.
+            slot["status"] = "requested"
+            result = {"decision": "block", "reason": next_task_instruction(slot)}
 
         temporary = path.with_suffix(".tmp")
         temporary.write_text(json.dumps(state, indent=2) + "\n")
         temporary.replace(path)
-        pending = state["pending"]
-        if not pending:
-            return {}
-        message = reminder(pending)
-        if kind == "Stop":
-            if event.get("stop_hook_active"):
-                # Avoid an infinite continuation loop during a connector outage.
-                return {"systemMessage": "Asana sync remains pending. " + message}
-            return {"decision": "block", "reason": message}
-        if kind == "SessionStart" or (kind == "PostToolUse" and added):
-            return {"hookSpecificOutput": {"hookEventName": kind, "additionalContext": message}}
-        return {}
+        return result
 
 
 def main():
