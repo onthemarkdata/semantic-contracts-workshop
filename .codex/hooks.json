@@ -1,5 +1,5 @@
 {
-  "description": "Keep pushed workshop commits recorded in Asana using the existing connector.",
+  "description": "Record agent pushes in Asana and apply Clarity to reader-facing text.",
   "hooks": {
     "SessionStart": [
       {
@@ -12,6 +12,17 @@
           }
         ],
         "matcher": "startup|resume"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/clarity_hook.py\"",
+            "timeout": 10,
+            "statusMessage": "Applying Clarity to reader-facing text",
+            "additionalContextLimit": 5000
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -25,6 +36,17 @@
           }
         ],
         "matcher": "^Bash$"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/clarity_hook.py\"",
+            "timeout": 10,
+            "statusMessage": "Applying Clarity to reader-facing text",
+            "additionalContextLimit": 5000
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -48,6 +70,42 @@
             "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/asana_push_hook.py\"",
             "timeout": 10,
             "statusMessage": "Checking pushed commits against Asana"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/clarity_hook.py\"",
+            "timeout": 10,
+            "statusMessage": "Applying Clarity to reader-facing text"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/clarity_hook.py\"",
+            "timeout": 10,
+            "statusMessage": "Applying Clarity to reader-facing text",
+            "additionalContextLimit": 5000
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/scripts/clarity_hook.py\"",
+            "timeout": 10,
+            "statusMessage": "Applying Clarity to reader-facing text",
+            "additionalContextLimit": 5000
           }
         ]
       }

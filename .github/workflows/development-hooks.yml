@@ -1,0 +1,21 @@
+name: Development hooks
+on:
+  pull_request:
+    paths:
+      - '.codex/hooks.json'
+      - '.agents/**'
+      - 'AGENTS.md'
+      - 'scripts/*hook.py'
+      - 'tests/test_*hook.py'
+      - 'docs/*hook.md'
+      - '.github/workflows/development-hooks.yml'
+permissions:
+  contents: read
+jobs:
+  hook-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test Asana and Clarity hooks
+        run: python3 -m unittest discover -s tests -p 'test_*hook.py' -v

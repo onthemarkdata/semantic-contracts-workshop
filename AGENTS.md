@@ -53,6 +53,12 @@ Use an isolated Compose project and `--exit-code-from devcontainer` when running
 Never delete existing database volumes as routine cleanup. Report unavailable
 checks and failures without changing their meaning.
 
+## Reader-facing text
+
+Apply [Clarity](.agents/skills/clarity/SKILL.md) before delivering text for people to read, including chat replies, progress updates, PR descriptions, commit messages, Asana notes, documentation, UI copy, comments, docstrings and user-visible strings in source files. Apply the skill to the files themselves as well as the messages describing them. Preserve facts, conditions, links and the requested tone. Read the references required by the selected mode and perform the skill's final check. Preserve code behavior, identifiers, captured logs, verbatim quotations and machine-readable data.
+
+The [Clarity hook](docs/clarity-hook.md) loads the skill into agent context and requests a final review. It does not certify writing quality or authorize external messages.
+
 ## Asana after a successful push
 
 After every successful push by an agent, update the relevant Asana task before reporting the work as finished. Executable Codex lifecycle hooks are configured in `.codex/hooks.json`; see [activation and behavior](docs/asana-push-hook.md). They detect push updates in this checkout's remote-tracking reflogs and retain pending commits until an Asana task readback confirms the full SHA. They require Codex's hook trust approval and an active agent session.
