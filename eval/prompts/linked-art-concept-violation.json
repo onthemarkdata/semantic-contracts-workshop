@@ -1,0 +1,26 @@
+{
+  "instructions": "Describe the mapped sculpture records using Linked Art JSON-LD. Preserve the explicit source-category mapping, physical-object identity, and full controlled-vocabulary identifiers. Keep collection membership distinct from artwork status. Count physical sculpture identities by their class and classification URI, not their display labels.",
+  "semantics": {
+    "sculpture_categories": [
+      "Bark-Sculpture",
+      "Beads-Sculpture",
+      "Bone/Ivory-Sculpture",
+      "Ceramics-Sculpture",
+      "Metal-Sculpture",
+      "Sculpture",
+      "Sculpture-Alabaster",
+      "Sculpture-Architectural",
+      "Sculpture-Architectural-Stone",
+      "Sculpture-Bronze",
+      "Sculpture-Ceramics",
+      "Sculpture-Miniature",
+      "Sculpture-Stone",
+      "Sculpture-Wood",
+      "Stone Sculpture",
+      "Stone-Sculpture",
+      "Wood-Sculpture"
+    ],
+    "linked_art_entity_type": "HumanMadeObject",
+    "linked_art_sculpture_type": "http://vocab.getty.edu/aat/300133025"
+  }
+}

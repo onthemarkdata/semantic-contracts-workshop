@@ -1,0 +1,44 @@
+{
+  "@context": "https://linked.art/ns/v1/linked-art.json",
+  "id": "https://example.org/semantic-contracts/object/200668",
+  "type": "HumanMadeObject",
+  "_label": "Sabine Houdon (1787–1836)",
+  "identified_by": [
+    {
+      "type": "Name",
+      "content": "Sabine Houdon (1787–1836)",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300404670",
+          "type": "Type",
+          "_label": "Primary Name"
+        }
+      ]
+    }
+  ],
+  "classified_as": [
+    {
+      "id": "http://vocab.getty.edu/aat/300047090",
+      "type": "Type",
+      "_label": "Sculpture",
+      "classified_as": [
+        {
+          "id": "http://vocab.getty.edu/aat/300435443",
+          "type": "Type",
+          "_label": "Type of Work"
+        }
+      ]
+    },
+    {
+      "id": "http://vocab.getty.edu/aat/300404024",
+      "type": "Type",
+      "_label": "Collection Item"
+    }
+  ],
+  "referred_to_by": [
+    {
+      "type": "LinguisticObject",
+      "content": "Local workshop mapping from Met objectID 200668, classification 'Sculpture'. This is a proposed workshop assertion, not a Met-authored Linked Art record."
+    }
+  ]
+}

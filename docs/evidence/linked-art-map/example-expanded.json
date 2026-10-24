@@ -1,0 +1,85 @@
+{
+  "http://www.w3.org/2000/01/rdf-schema#label": [
+    {
+      "@value": "Sabine Houdon (1787–1836)"
+    }
+  ],
+  "http://www.cidoc-crm.org/cidoc-crm/P2_has_type": [
+    {
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "Sculpture"
+        }
+      ],
+      "http://www.cidoc-crm.org/cidoc-crm/P2_has_type": [
+        {
+          "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+              "@value": "Type of Work"
+            }
+          ],
+          "@id": "http://vocab.getty.edu/aat/300435443",
+          "@type": [
+            "http://www.cidoc-crm.org/cidoc-crm/E55_Type"
+          ]
+        }
+      ],
+      "@id": "http://vocab.getty.edu/aat/300047090",
+      "@type": [
+        "http://www.cidoc-crm.org/cidoc-crm/E55_Type"
+      ]
+    },
+    {
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        {
+          "@value": "Collection Item"
+        }
+      ],
+      "@id": "http://vocab.getty.edu/aat/300404024",
+      "@type": [
+        "http://www.cidoc-crm.org/cidoc-crm/E55_Type"
+      ]
+    }
+  ],
+  "@id": "https://example.org/semantic-contracts/object/200668",
+  "http://www.cidoc-crm.org/cidoc-crm/P1_is_identified_by": [
+    {
+      "http://www.cidoc-crm.org/cidoc-crm/P2_has_type": [
+        {
+          "http://www.w3.org/2000/01/rdf-schema#label": [
+            {
+              "@value": "Primary Name"
+            }
+          ],
+          "@id": "http://vocab.getty.edu/aat/300404670",
+          "@type": [
+            "http://www.cidoc-crm.org/cidoc-crm/E55_Type"
+          ]
+        }
+      ],
+      "http://www.cidoc-crm.org/cidoc-crm/P190_has_symbolic_content": [
+        {
+          "@value": "Sabine Houdon (1787–1836)"
+        }
+      ],
+      "@type": [
+        "http://www.cidoc-crm.org/cidoc-crm/E33_E41_Linguistic_Appellation"
+      ]
+    }
+  ],
+  "http://www.cidoc-crm.org/cidoc-crm/P67i_is_referred_to_by": [
+    {
+      "http://www.cidoc-crm.org/cidoc-crm/P190_has_symbolic_content": [
+        {
+          "@value": "Local workshop mapping from Met objectID 200668, classification 'Sculpture'. This is a proposed workshop assertion, not a Met-authored Linked Art record."
+        }
+      ],
+      "@type": [
+        "http://www.cidoc-crm.org/cidoc-crm/E33_Linguistic_Object"
+      ]
+    }
+  ],
+  "@type": [
+    "http://www.cidoc-crm.org/cidoc-crm/E22_Human-Made_Object"
+  ]
+}

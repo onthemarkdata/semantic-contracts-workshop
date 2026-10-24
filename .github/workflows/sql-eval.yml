@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install -r eval/requirements.txt
+      - run: pip install -r eval/requirements.txt -r requirements-linked-art.txt
       - run: python -m unittest discover -s tests -v
       - run: python scripts/sql_eval.py build
       - name: Start the workshop database and prepare eval access

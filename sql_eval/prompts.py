@@ -3,6 +3,14 @@
 import json
 
 RULES = {
+    "linked_art_entity_type": {
+        "HumanMadeObject": "Represent each selected sculpture object with Linked Art type HumanMadeObject. Physical objects, digital files, and visual content have distinct identities; do not count images or VisualItems as extra physical objects.",
+        "DigitalObject": "Represent the selected records as Linked Art DigitalObject entities."
+    },
+    "linked_art_sculpture_type": {
+        "http://vocab.getty.edu/aat/300047090": "Use the full Sculpture URI http://vocab.getty.edu/aat/300047090 in classified_as, with Type of Work http://vocab.getty.edu/aat/300435443 as its classification. Collection Item and Artwork are separate concepts. Do not infer Artwork merely from collection membership or substitute its URI for Sculpture.",
+        "http://vocab.getty.edu/aat/300133025": "Use the Artwork URI http://vocab.getty.edu/aat/300133025 in place of the Sculpture URI in classified_as."
+    },
     "sculpture_categories": {"explicit_list": "For this workshop, a sculpture is one museum object record whose object_physical_properties.classification, after trimming surrounding spaces, exactly matches a listed category. Count each object_id once. Use the complete explicit list below; do not replace it with classification = 'Sculpture', a substring search, or a guess from material, title, or object name. NULL, empty, and space-only classifications are unknown and excluded from the count; exclusion does not establish that an object is not a sculpture. Listed categories:"},
     "missing_text": {
         "null_or_blank": "Treat NULL and empty or whitespace-only text as missing. For populated text, use NULLIF(BTRIM(column), '') IS NOT NULL.",

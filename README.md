@@ -1617,3 +1617,84 @@ git push
 ```
 
 The same PR comment should update to **Prompt MAP: PASS**. As in the first exercise, the repair restores the original file, so the PR may have no net changes. Keep its failed and repaired runs as the record of what happened, then close the demonstration PR.
+
+## Linked Art Follow-up: Physical Objects and Controlled Vocabulary
+
+The previous exercise defined a local group of sculpture labels. We can now express that group using Linked Art's model and identifiers, then check the resulting records against the official object schema.
+
+Linked Art distinguishes a physical `HumanMadeObject`, a `DigitalObject` such as an image file, and a `VisualItem` representing visual content. Sculpture is a classification of the object, identified by `http://vocab.getty.edu/aat/300047090`. Artwork has a different identifier, `http://vocab.getty.edu/aat/300133025`. Belonging to a museum collection does not automatically establish artwork status.
+
+The proposed local mapping sends the same 17 source labels to Linked Art's recommended Sculpture concept. Linked Art supplies the representation and vocabulary; the membership decision remains a workshop policy for review. The [mapping evidence](docs/evidence/linked-art-map/README.md) links the official sources and documents which records remain unknown or unmapped.
+
+### I - Export and validate the mapped objects
+
+From a branch containing this follow-up, install the validation dependencies and run the exporter:
+
+```bash
+python3 -m pip install -r requirements-linked-art.txt
+python3 scripts/linked_art_sculpture.py --out artifacts/linked-art/pass
+```
+
+The exporter reads the structured settings in [linked-art-sculpture.json](eval/prompts/linked-art-sculpture.json). It creates 296 object records, validates them with the pinned Linked Art Human-Made Object schema, and expands their JSON-LD using the pinned official context. It does not call a language model.
+
+Open `artifacts/linked-art/pass/records.json`. Each record has `type: HumanMadeObject` and a `classified_as` entry with Sculpture's full URI. That entry is itself classified as a Type of Work. Collection Item is a separate classification. The records include a primary name and a note identifying the local source mapping.
+
+The report should show `schema_valid: true` and `expanded_sculpture_count: 296`. The expanded JSON-LD exposes the CIDOC CRM class and classification relationship; the count uses these identifiers, not the display label.
+
+### II - Try a valid structure with the wrong concept
+
+Run the provided concept-violation fixture:
+
+```bash
+python3 scripts/linked_art_sculpture.py \
+  --prompt eval/prompts/linked-art-concept-violation.json \
+  --out artifacts/linked-art/concept-fail
+```
+
+This changes the classification URI from Sculpture to Artwork. The generated records still display the label “Sculpture,” but their identifier now states something different.
+
+Expect exit code 1. The upstream object schema still passes, because the records retain the permitted structure and URI format. The MAP fails because Artwork cannot substitute for the agreed Sculpture concept. The expanded graph contains zero matching physical Sculpture identities. The original 296 objects still exist; the incorrect encoding prevents the agreed query from recognizing them.
+
+For comparison, changing the entity class to `DigitalObject` fails the selected physical-object schema itself:
+
+```bash
+python3 scripts/linked_art_sculpture.py \
+  --prompt eval/prompts/linked-art-class-violation.json \
+  --out artifacts/linked-art/class-fail
+```
+
+This command also exits 1, with `schema_valid: false`.
+
+### III - See the Linked Art violation in GitHub
+
+Create an exercise branch from the branch containing the Linked Art profile. Save the approved prompt and introduce the concept violation:
+
+```bash
+git switch -c workshop/linked-art-concept
+mkdir -p artifacts/linked-art
+cp eval/prompts/linked-art-sculpture.json artifacts/linked-art/approved-prompt.json
+cp eval/prompts/linked-art-concept-violation.json eval/prompts/linked-art-sculpture.json
+python3 scripts/check_prompt_map.py
+```
+
+The normal MAP check should fail on the changed `linked_art_sculpture_type` declaration and the resulting `linked_art.sculpture_identity`. Its summary also reports that the official object schema passed. Commit and push the prompt change:
+
+```bash
+git add eval/prompts/linked-art-sculpture.json
+git commit -m "Substitute Artwork for the agreed Sculpture concept"
+git push -u origin workshop/linked-art-concept
+```
+
+Open a PR targeting the branch that contains the Linked Art policy. Read the **Prompt MAP contract** check and its bot comment. The expected URI ends in `300047090`; the actual URI ends in `300133025`. This is a semantic identity violation despite valid JSON and a passing upstream schema.
+
+Restore the saved prompt and push the repair:
+
+```bash
+cp artifacts/linked-art/approved-prompt.json eval/prompts/linked-art-sculpture.json
+python3 scripts/check_prompt_map.py
+git add eval/prompts/linked-art-sculpture.json
+git commit -m "Restore the Linked Art Sculpture concept"
+git push
+```
+
+The check and comment should return to PASS. The original README, two scored evaluations, and earlier violation examples remain available for comparison. This additional exercise verifies a local mapping with Linked Art resources; it does not establish a new model score or complete Linked Art conformance.

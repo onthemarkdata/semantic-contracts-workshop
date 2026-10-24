@@ -6,6 +6,9 @@ import json
 from pathlib import Path
 import sys
 
+# When invoked by CI from the base checkout, load validation code from that checkout.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 CONTRACT = 'data_contract_components/contract_definition/object_images_contract_spec.json'
 MARKER = '<!-- museum-prompt-map -->'
 
@@ -94,6 +97,15 @@ def check(policy_root, candidate_root, prompt_path=None):
         raise ValueError('MAP profiles must have distinct identifiers and prompt assets.')
     reports = [check_profile(candidate_root, profile, prompt_path) for profile in profiles]
     violations = [dict(v, asset=r['asset']) for r in reports for v in r['violations']]
+    linked_reports = []
+    protected_files = ['scripts/check_prompt_map.py', 'sql_eval/prompts.py']
+    for profile in profiles:
+        if profile.get('linkedArt'):
+            from scripts.linked_art_sculpture import evaluate, PROTECTED_FILES
+            linked_report, _, _ = evaluate(policy_root, candidate_root, profile, prompt_path)
+            linked_reports.append(linked_report)
+            violations.extend(dict(v, asset=linked_report['asset']) for v in linked_report['violations'])
+            protected_files.extend(PROTECTED_FILES)
     def reject(rule, expected, actual, message):
         violations.append(dict(rule=rule, expected=expected, actual=actual, message=message))
     # In PRs the base branch owns policy; changing prompt and policy together cannot evade it.
@@ -102,19 +114,23 @@ def check(policy_root, candidate_root, prompt_path=None):
         if candidate_contract.get('metadataApplicationProfile') != ref:
             reject('policy.change', 'approved MAP section', 'metadataApplicationProfile changed',
                    'The MAP section requires separate maintainer review.')
-        for relative in ('scripts/check_prompt_map.py', 'sql_eval/prompts.py'):
+        for relative in dict.fromkeys(protected_files):
             if within(policy_root, relative).read_bytes() != within(candidate_root, relative).read_bytes():
                 reject('policy.change', 'approved base-branch policy', relative,
                        'Policy or validator changes require separate maintainer review; this PR is checked against the base policy.')
     return dict(status='fail' if violations else 'pass', asset=reports[0]['asset'],
                 map_id=ref['id'], map_version=ref['version'],
-                checked_assets=[r['asset'] for r in reports], violations=violations)
+                checked_assets=[r['asset'] for r in reports], linked_art=linked_reports, violations=violations)
 
 
 def markdown(report):
     lines = [MARKER, '## Prompt MAP: ' + report['status'].upper(), '',
              'The **Prompt MAP contract** check validates the prompt contract. '
              'It blocks merging only when required by the target branch rules.', '']
+    for linked in report.get('linked_art', []):
+        lines += [f"Linked Art object schema: {'PASS' if linked['schema_valid'] else 'FAIL'}; "
+                  f"mapped records: {linked['mapped_records']}; sculpture identities after JSON-LD expansion: "
+                  f"{linked['expanded_sculpture_count']} (expected {linked['expected_sculpture_count']}).", '']
     for item in report['violations']:
         # The workflow reporter escapes these values before posting them in a pre block.
         lines += [f"Rule: {item['rule']}", f"Expected: {json.dumps(item['expected'], ensure_ascii=False)}",

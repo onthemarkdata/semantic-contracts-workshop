@@ -1,5 +1,12 @@
 # Semantic contracts workshop: review proposal
 
+> **Linked Art follow-up:** Extend the sculpture proposal with the official
+> Human-Made Object JSON Schema, JSON-LD context, and recommended Sculpture URI.
+> Keep source-label mapping decisions explicit and local. Demonstrate that
+> substituting Artwork's URI preserves schema validity but violates the agreed
+> sculpture identity. This deterministic mapping exercise adds no model score.
+> See [the standards-based evidence](evidence/linked-art-map/README.md).
+
 > **Sculpture category follow-up:** Add a separate, proposed MAP profile inside
 > the original contract for an explicit group of 17 sculpture classifications.
 > Compare its 296 object records with the 151 selected by the exact label

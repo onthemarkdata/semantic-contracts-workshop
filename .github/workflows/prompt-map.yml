@@ -25,6 +25,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Linked Art validation dependencies
+        shell: bash
+        run: |
+          requirements=candidate/requirements-linked-art.txt
+          if [ -f policy/requirements-linked-art.txt ]; then
+            requirements=policy/requirements-linked-art.txt
+          fi
+          python -m pip install -r "$requirements"
       - name: Validate prompt against approved MAP
         shell: bash
         run: |

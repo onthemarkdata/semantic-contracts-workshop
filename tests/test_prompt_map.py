@@ -22,8 +22,10 @@ def write(path, value):
 
 
 def candidate(root):
+    from scripts.linked_art_sculpture import PROTECTED_FILES
     for relative in (CONTRACT, 'eval/prompts/semantic.json', 'eval/prompts/sculpture.json',
-                     'sql_eval/prompts.py', 'scripts/check_prompt_map.py'):
+                     'eval/prompts/linked-art-sculpture.json',
+                     'sql_eval/prompts.py', 'scripts/check_prompt_map.py', *PROTECTED_FILES):
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(ROOT / relative, target)

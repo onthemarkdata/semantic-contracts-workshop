@@ -1,0 +1,176 @@
+{
+  "status": "fail",
+  "asset": "eval/prompts/linked-art-class-violation.json",
+  "mapped_records": 296,
+  "unclassified_unknown": 1457,
+  "unmapped_classified_records": 1272,
+  "expected_sculpture_count": 296,
+  "schema_valid": false,
+  "schema_invalid_records": 296,
+  "schema_errors": [
+    {
+      "id": "https://example.org/semantic-contracts/object/200668",
+      "path": [
+        "type"
+      ],
+      "message": "'HumanMadeObject' was expected"
+    },
+    {
+      "id": "https://example.org/semantic-contracts/object/202115",
+      "path": [
+        "type"
+      ],
+      "message": "'HumanMadeObject' was expected"
+    },
+    {
+      "id": "https://example.org/semantic-contracts/object/191803",
+      "path": [
+        "type"
+      ],
+      "message": "'HumanMadeObject' was expected"
+    },
+    {
+      "id": "https://example.org/semantic-contracts/object/206399",
+      "path": [
+        "type"
+      ],
+      "message": "'HumanMadeObject' was expected"
+    },
+    {
+      "id": "https://example.org/semantic-contracts/object/206918",
+      "path": [
+        "type"
+      ],
+      "message": "'HumanMadeObject' was expected"
+    },
+    {
+      "id": "https://example.org/semantic-contracts/object/199674",
+      "path": [
+        "type"
+      ],
+      "message": "'HumanMadeObject' was expected"
+    },
+    {
+      "id": "https://example.org/semantic-contracts/object/192729",
+      "path": [
+        "type"
+      ],
+      "message": "'HumanMadeObject' was expected"
+    },
+    {
+      "id": "https://example.org/semantic-contracts/object/204758",
+      "path": [
+        "type"
+      ],
+      "message": "'HumanMadeObject' was expected"
+    },
+    {
+      "id": "https://example.org/semantic-contracts/object/211486",
+      "path": [
+        "type"
+      ],
+      "message": "'HumanMadeObject' was expected"
+    },
+    {
+      "id": "https://example.org/semantic-contracts/object/208149",
+      "path": [
+        "type"
+      ],
+      "message": "'HumanMadeObject' was expected"
+    }
+  ],
+  "expanded_sculpture_count": 0,
+  "violations": [
+    {
+      "rule": "linked_art.object_schema",
+      "expected": "Linked Art Human-Made Object schema",
+      "actual": [
+        {
+          "id": "https://example.org/semantic-contracts/object/200668",
+          "path": [
+            "type"
+          ],
+          "message": "'HumanMadeObject' was expected"
+        },
+        {
+          "id": "https://example.org/semantic-contracts/object/202115",
+          "path": [
+            "type"
+          ],
+          "message": "'HumanMadeObject' was expected"
+        },
+        {
+          "id": "https://example.org/semantic-contracts/object/191803",
+          "path": [
+            "type"
+          ],
+          "message": "'HumanMadeObject' was expected"
+        },
+        {
+          "id": "https://example.org/semantic-contracts/object/206399",
+          "path": [
+            "type"
+          ],
+          "message": "'HumanMadeObject' was expected"
+        },
+        {
+          "id": "https://example.org/semantic-contracts/object/206918",
+          "path": [
+            "type"
+          ],
+          "message": "'HumanMadeObject' was expected"
+        },
+        {
+          "id": "https://example.org/semantic-contracts/object/199674",
+          "path": [
+            "type"
+          ],
+          "message": "'HumanMadeObject' was expected"
+        },
+        {
+          "id": "https://example.org/semantic-contracts/object/192729",
+          "path": [
+            "type"
+          ],
+          "message": "'HumanMadeObject' was expected"
+        },
+        {
+          "id": "https://example.org/semantic-contracts/object/204758",
+          "path": [
+            "type"
+          ],
+          "message": "'HumanMadeObject' was expected"
+        },
+        {
+          "id": "https://example.org/semantic-contracts/object/211486",
+          "path": [
+            "type"
+          ],
+          "message": "'HumanMadeObject' was expected"
+        },
+        {
+          "id": "https://example.org/semantic-contracts/object/208149",
+          "path": [
+            "type"
+          ],
+          "message": "'HumanMadeObject' was expected"
+        }
+      ],
+      "message": "Generated records fail the pinned upstream object schema."
+    },
+    {
+      "rule": "linked_art.sculpture_identity",
+      "expected": {
+        "entity": "http://www.cidoc-crm.org/cidoc-crm/E22_Human-Made_Object",
+        "classified_as": "http://vocab.getty.edu/aat/300047090",
+        "count": 296
+      },
+      "actual": {
+        "entity": "DigitalObject",
+        "classified_as": "http://vocab.getty.edu/aat/300047090",
+        "count": 0
+      },
+      "message": "The expanded graph must identify physical sculpture objects by class and URI. Artwork is a separate classification; a display label of Sculpture cannot substitute for its URI."
+    }
+  ]
+}

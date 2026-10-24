@@ -64,7 +64,7 @@
     },
     "metadataApplicationProfile": {
       "id": "museum-sql-prompt-map",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "title": "Museum SQL prompt metadata application profile",
       "purpose": "Describe the meaning and use of metadata in the fixed museum SQL exercise. This local application profile is not a Linked Art conformance claim.",
       "sources": [
@@ -241,6 +241,99 @@
               "definition": "For this workshop, a sculpture is one museum object record whose object_physical_properties.classification, after trimming surrounding spaces, exactly matches a listed category. Count each object_id once. Use the complete explicit list below; do not replace it with classification = 'Sculpture', a substring search, or a guess from material, title, or object name. NULL, empty, and space-only classifications are unknown and excluded from the count; exclusion does not establish that an object is not a sculpture. Listed categories:"
             }
           ]
+        },
+        {
+          "id": "museum-linked-art-sculpture-map",
+          "version": "1.0.0",
+          "title": "Linked Art sculpture identity and classification",
+          "purpose": "Map the locally proposed sculpture group to Linked Art physical objects and its recommended Sculpture concept. The source-label mapping remains a workshop assertion, not a mapping published or endorsed by the Met or Linked Art.",
+          "promptAssetResourceName": "eval/prompts/linked-art-sculpture.json",
+          "approved_instructions": "Describe the mapped sculpture records using Linked Art JSON-LD. Preserve the explicit source-category mapping, physical-object identity, and full controlled-vocabulary identifiers. Keep collection membership distinct from artwork status. Count physical sculpture identities by their class and classification URI, not their display labels.",
+          "elements": [
+            {
+              "id": "sculpture_categories",
+              "prompt_path": "semantics.sculpture_categories",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "array",
+              "items_type": "string",
+              "unique_items": true,
+              "required_value": [
+                "Bark-Sculpture",
+                "Beads-Sculpture",
+                "Bone/Ivory-Sculpture",
+                "Ceramics-Sculpture",
+                "Metal-Sculpture",
+                "Sculpture",
+                "Sculpture-Alabaster",
+                "Sculpture-Architectural",
+                "Sculpture-Architectural-Stone",
+                "Sculpture-Bronze",
+                "Sculpture-Ceramics",
+                "Sculpture-Miniature",
+                "Sculpture-Stone",
+                "Sculpture-Wood",
+                "Stone Sculpture",
+                "Stone-Sculpture",
+                "Wood-Sculpture"
+              ],
+              "applies_to": [
+                "object_physical_properties.classification",
+                "object_physical_properties.object_id"
+              ],
+              "definition": "For this workshop, a sculpture is one museum object record whose object_physical_properties.classification, after trimming surrounding spaces, exactly matches a listed category. Count each object_id once. Use the complete explicit list below; do not replace it with classification = 'Sculpture', a substring search, or a guess from material, title, or object name. NULL, empty, and space-only classifications are unknown and excluded from the count; exclusion does not establish that an object is not a sculpture. Listed categories:"
+            },
+            {
+              "id": "linked_art_entity_type",
+              "prompt_path": "semantics.linked_art_entity_type",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "HumanMadeObject",
+              "applies_to": [
+                "type"
+              ],
+              "definition": "Represent each selected sculpture object with Linked Art type HumanMadeObject. Physical objects, digital files, and visual content have distinct identities; do not count images or VisualItems as extra physical objects."
+            },
+            {
+              "id": "linked_art_sculpture_type",
+              "prompt_path": "semantics.linked_art_sculpture_type",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "http://vocab.getty.edu/aat/300047090",
+              "applies_to": [
+                "classified_as.id"
+              ],
+              "definition": "Use the full Sculpture URI http://vocab.getty.edu/aat/300047090 in classified_as, with Type of Work http://vocab.getty.edu/aat/300435443 as its classification. Collection Item and Artwork are separate concepts. Do not infer Artwork merely from collection membership or substitute its URI for Sculpture."
+            }
+          ],
+          "linkedArt": {
+            "context": "https://linked.art/ns/v1/linked-art.json",
+            "schema": "https://linked.art/api/1.0/schema/object.json",
+            "snapshot": "vendor/linked-art/manifest.json",
+            "source_field": "classification",
+            "mapping_status": "proposed local mapping for review",
+            "mapping_relation": "Assert the broader Sculpture work type for records bearing any listed source label; do not assert exact equivalence of the label with the vocabulary concept.",
+            "unknown_policy": "Unclassified records remain unknown; classified labels outside the explicit mapping remain unmapped.",
+            "artwork_policy": "Do not infer the Artwork classification from collection membership.",
+            "count_unit": "One physical object identity per source objectID."
+          },
+          "sources": [
+            {
+              "title": "Linked Art basic patterns: core classes and classifications",
+              "url": "https://github.com/linked-art/linked.art/blob/bcbff1761e65f44eeaeb92b4b2b83da2783539f8/docs/model/base/index.md"
+            },
+            {
+              "title": "Recommended Sculpture vocabulary and Type of Work meta-type",
+              "url": "https://github.com/linked-art/linked.art/blob/bcbff1761e65f44eeaeb92b4b2b83da2783539f8/docs/model/vocab/recommended/index.md"
+            },
+            {
+              "title": "Required vocabulary: Collection Item, Artwork, Primary Name, Type of Work",
+              "url": "https://github.com/linked-art/linked.art/blob/bcbff1761e65f44eeaeb92b4b2b83da2783539f8/docs/model/vocab/required/index.md"
+            }
+          ],
+          "scope": "Pinned upstream JSON Schema validation plus offline JSON-LD expansion and local MAP constraints. Passing these checks does not establish full Linked Art conformance or curatorial validity of the mapping."
         }
       ]
     }
