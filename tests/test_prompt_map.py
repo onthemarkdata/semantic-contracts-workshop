@@ -22,7 +22,7 @@ def write(path, value):
 
 
 def candidate(root):
-    for relative in (CONTRACT, 'eval/prompts/semantic.json',
+    for relative in (CONTRACT, 'eval/prompts/semantic.json', 'eval/prompts/sculpture.json',
                      'sql_eval/prompts.py', 'scripts/check_prompt_map.py'):
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)

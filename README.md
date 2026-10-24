@@ -1495,3 +1495,125 @@ Right-click the generated `.tar.gz` file in the Explorer and select **Download**
 We have followed the same change, detect, and repair workflow used for database contracts in Part 1. This time, the proposed change affected the meaning of missing text in a prompt while the database schema stayed the same.
 
 You now have two kinds of evidence: scored model answers showing what happened under each prompt, and MAP checks showing whether a proposed prompt preserves the agreed metadata rules. The MAP lives in the original data contract, and its validation results appear in the same GitHub workflow used to review code changes.
+
+## Follow-up Scenario: What Counts as a Sculpture?
+
+The missing-text exercise checks how we interpret a value. We can also use the MAP to define membership in an art category. Consider the question: **“How many sculptures are in our sample?”**
+
+Our sample uses several sculpture classifications, including `Sculpture`, `Stone Sculpture`, `Stone-Sculpture`, and `Wood-Sculpture`. A query matching only `classification = 'Sculpture'` can execute successfully while excluding objects that belong to our agreed sculpture group.
+
+For this follow-up, we propose a local group containing 17 explicit source labels. Together they describe 296 records. The exact label `Sculpture` describes 151. The [category list and measured counts](docs/evidence/sculpture-map/README.md) document the decision. This grouping needs maintainer review; it is not a universal definition of sculpture or a Linked Art equivalence claim. Records without classification remain unknown, and excluding another label does not establish that its objects are not sculptures.
+
+| Exercise | Proposed prompt change | Meaning affected |
+| --- | --- | --- |
+| Missing text | `null_or_blank` → `null_only` | Whether blank values count as missing |
+| Sculpture membership | 17 approved labels → only `Sculpture` | Which object records count as members of the category |
+
+The existing two model evaluations stay unchanged. The following comparison measures category membership directly; **296 and 151 are object counts, not evaluation scores**.
+
+### I - Inspect the category definition
+
+Start from a branch containing this follow-up and create a new exercise branch:
+
+```bash
+git switch -c workshop/sculpture-membership
+```
+
+Open [the original data contract](data_contract_components/contract_definition/object_images_contract_spec.json). Its `metadataApplicationProfile.additionalProfiles` list now contains `museum-sculpture-category-map`, governing [eval/prompts/sculpture.json](eval/prompts/sculpture.json). The `sculpture_categories` element records the 17 required category names as an explicit list. Its definition specifies the field, exact membership rule, one-object counting unit, and treatment of unknown classifications.
+
+The new prompt contains the same category list. The renderer turns that list into instructions; the MAP checker compares its membership with the approved contract. Reordering the list is allowed, while adding, removing, or duplicating categories fails validation.
+
+```bash
+python3 scripts/check_prompt_map.py
+```
+
+The command checks both governed prompts: the original `semantic.json` and the new `sculpture.json`. Both should pass before the exercise.
+
+### II - Compare the two interpretations
+
+Run the comparison against the narrowed example fixture:
+
+```bash
+python3 scripts/compare_sculpture_scope.py \
+  --prompt eval/prompts/sculpture-violation.json
+```
+
+The script reads the checked-in sample and reports:
+
+- Approved category group: **296** object records.
+- Proposed exact-label group: **151** object records.
+- Difference: **145 fewer** records, with the excluded categories listed.
+- Unknown classification: **1,457** records, excluded from both counts.
+
+It also writes `artifacts/sculpture/comparison.sql`. If your Codespace's workshop database is running, execute those read-only queries to verify the same counts:
+
+```bash
+PGPASSWORD=postgres psql -h postgres -U postgres -d postgres \
+  -v ON_ERROR_STOP=1 -f artifacts/sculpture/comparison.sql
+```
+
+The two queries use the same table and counting unit. Only category membership differs. No model startup or new inference run is needed.
+
+### III - Narrow the prompt's category membership
+
+Save a copy of the approved prompt, then replace the governed file with the narrowed fixture:
+
+```bash
+mkdir -p artifacts/sculpture
+cp eval/prompts/sculpture.json artifacts/sculpture/approved-prompt.json
+cp eval/prompts/sculpture-violation.json eval/prompts/sculpture.json
+git diff -- eval/prompts/sculpture.json
+```
+
+The prompt's `semantics.sculpture_categories` is now `["Sculpture"]`. Its instructions and the contract remain unchanged. Check the proposed prompt:
+
+```bash
+python3 scripts/check_prompt_map.py
+```
+
+Expect exit code 1 and a violation named **`sculpture_categories`**. The report shows all 17 expected labels, the actual `["Sculpture"]` list, and the missing approved categories. Unlike the earlier missing-text example, this failure concerns the definition of category membership.
+
+To measure the effect of the edited prompt itself, run:
+
+```bash
+python3 scripts/compare_sculpture_scope.py
+```
+
+The default comparison reads the governed `sculpture.json`, so it now reports the same reduction from 296 to 151.
+
+### IV - See the category violation in GitHub
+
+Commit the prompt change and push your branch:
+
+```bash
+git add eval/prompts/sculpture.json
+git commit -m "Narrow sculpture membership to one source label"
+git push -u origin workshop/sculpture-membership
+```
+
+Open a PR targeting the branch that contains the reviewed sculpture definition. If the use case has reached `main`, target `main`; during a stacked review, target its implementation branch. In a fork, keep both sides of the exercise PR in your fork.
+
+The **Prompt MAP contract** check should fail on `sculpture_categories`. The bot's **Prompt MAP: FAIL** comment identifies the expected list, actual list, and excluded categories. This gives reviewers the semantic disagreement to resolve even though the database has not changed.
+
+> [!NOTE]
+> Introducing the sculpture definition changes policy. A PR proposing that definition against the earlier contract will report `policy.change` and needs maintainer review. The exercise PR targets the branch containing the new definition so its failure isolates the category-membership change. Required-check configuration remains outside this walkthrough.
+
+### V - Restore the agreed category membership
+
+Restore the approved prompt you saved before the edit:
+
+```bash
+cp artifacts/sculpture/approved-prompt.json eval/prompts/sculpture.json
+python3 scripts/check_prompt_map.py
+python3 scripts/compare_sculpture_scope.py
+```
+
+The MAP should pass, and the comparison should show **296 → 296**, with no excluded approved categories. Commit and push the repair:
+
+```bash
+git add eval/prompts/sculpture.json
+git commit -m "Restore the approved sculpture category group"
+git push
+```
+
+The same PR comment should update to **Prompt MAP: PASS**. As in the first exercise, the repair restores the original file, so the PR may have no net changes. Keep its failed and repaired runs as the record of what happened, then close the demonstration PR.

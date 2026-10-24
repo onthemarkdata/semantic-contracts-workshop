@@ -1,0 +1,8 @@
+{
+  "instructions": "Answer the workshop question: How many sculptures are in our sample? Use the supplied sculpture category definition to select object records from object_physical_properties, count distinct object_id values, and return the count. Preserve the approved category membership and report unclassified records as unknown when discussing coverage.",
+  "semantics": {
+    "sculpture_categories": [
+      "Sculpture"
+    ]
+  }
+}
