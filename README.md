@@ -1058,3 +1058,440 @@ Walking away from this chapter, you should have been able to achieve the followi
 Again, we want to highlight that this implementation and sandbox environment is intended for learning purposes. Scaling beyond a few a data contracts increases the complexity of of managing their lifecycle, and thus you should strongly consider the tradeoffs of building your own, leveraging an open-source tool, or buying a dedicated product (e.g. data catalog service) for each component of the data contract architecture.
 
 In the next chapter, we continue moving away from just theory and present three unique real-world case studies of data contracts in production from companies we interviewed for the book.
+
+---
+
+# 📘 Part 2: Implementing Semantic Contracts with Metadata Application Profiles
+
+In Part 1, we used a data contract to detect changes to the museum database. We now continue with the AI assistant that queries that database. A query can run successfully and still answer the wrong question if the assistant interprets a field, a missing value, or an object count incorrectly.
+
+In this exercise, we will evaluate the assistant's current prompt, evaluate a prompt with more explicit semantic instructions, and compare their scores. We will then inspect the Metadata Application Profile (MAP) added to our original data contract, deliberately violate one of its rules, and resolve the violation through a GitHub pull request.
+
+We aim for you to achieve the following by going through Part 2:
+
+1. Run and score two prompts against the same museum questions and data.
+
+2. Use explicit definitions to describe how the assistant should interpret museum metadata.
+
+3. Understand how a MAP extends the original data contract to cover the prompt.
+
+4. Detect a semantic contract violation locally and in GitHub Actions.
+
+5. Repair the prompt and see the pull-request comment and checks return to passing.
+
+> [!NOTE]
+> This walkthrough runs the steps manually in a GitHub Codespace. Follow the commands in order, using the same terminal. There are two model evaluations; detecting and repairing the MAP violation does not require a third evaluation. We will skip repository ruleset configuration. You will see failed checks and an explanatory comment, but a failed check only blocks merging when a repository administrator makes it required.
+
+## Mock Semantic Contract Scenario Intro
+
+You are continuing as the data platform engineer supporting the museum application. The assistant now answers questions such as how many objects have an artist name, which departments hold the most objects, and which records are marked as public domain.
+
+Consider a question asking for objects with a populated artist name. The column can contain `NULL`, an empty string, or spaces. The SQL expression `artist_display_name IS NOT NULL` includes empty and whitespace-only values. For this exercise, the agreed meaning of populated text is:
+
+```sql
+NULLIF(BTRIM(artist_display_name), '') IS NOT NULL
+```
+
+The database schema can remain unchanged while the assistant switches between these interpretations. Our MAP records the agreed interpretation so that a proposed prompt change can be checked before it is merged.
+
+### Dataset and Evaluation
+
+We use the same checked-in sample of 3,025 Met museum objects introduced in Part 1. The assistant receives the database schema, SQL rules, prompt instructions, and one question at a time. It gets one read-only SQL attempt per question and, if that query succeeds, submits the result values as its final answer.
+
+A separate scorer compares those submitted values with fixed reference answers. A query that executes without an error does not automatically earn credit: the submitted answer must be correct. The reference answers and scorer are excluded from the agent image.
+
+Both evaluations use the same [20 questions](docs/sql-eval-questions.md), database, model, question order, and execution limits. Only the prompt changes. The first prompt is [current.json](eval/prompts/current.json), a preserved copy of the existing improved prompt. The second is [semantic.json](eval/prompts/semantic.json), which adds explicit guidance about object counts, field meanings, aggregation, and returning query results.
+
+### What the Metadata Application Profile Covers
+
+A Metadata Application Profile defines how metadata is used for a particular purpose. Here, the purpose is answering the fixed museum SQL questions. Our profile specifies the required prompt settings, their definitions, and the fields to which they apply.
+
+For example, it defines missing text, requires joins through `object_id`, and says that public-domain status comes from `is_public_domain IS TRUE`. An image URL does not establish that an object is in the public domain.
+
+The profile draws on [Linked Art](https://linked.art/model/intro/) to distinguish a physical object from a conceptual work or digital representation. For these questions, “artwork” explicitly means one museum object record. This is a local counting convention; it does not establish that every collection item is classified as an artwork or that this dataset conforms to Linked Art.
+
+### Project Repo Overview
+
+The files below extend the data contract architecture from Part 1:
+
+```txt
+/workspace
+├── eval/
+│   ├── prompts/
+│   │   ├── current.json                  # First prompt, preserved unchanged
+│   │   ├── semantic.json                 # Second prompt, governed by the MAP
+│   │   └── map-violation.json            # Example with incorrect missing-text semantics
+│   └── rehearsal-budget.json            # Shared, frozen limits for both evaluations
+├── data_contract_components/
+│   └── contract_definition/
+│       └── object_images_contract_spec.json  # Original contract, including its MAP section
+├── sql_eval/
+│   └── prompts.py                       # Turns semantic settings into prompt instructions
+├── scripts/
+│   ├── sql_eval.py                      # Builds, runs, and scores the evaluations
+│   ├── compare_map_eval.py              # Compares the two scored runs
+│   └── check_prompt_map.py              # Validates the prompt against the MAP
+└── .github/workflows/
+    ├── prompt-map.yml                   # Runs MAP validation on pushes and pull requests
+    └── prompt-map-comment.yml           # Posts or updates the explanation on a PR
+```
+
+The data asset for this added check is the prompt file. The contract definition is the MAP section of our existing JSON contract. Detection is handled by `check_prompt_map.py`, and GitHub Actions brings that check into the pull-request workflow. The original database checks continue to run as well.
+
+## Semantic Contract Violation Scenario
+
+### I - Prepare a fresh GitHub Codespace
+
+Start from the current `main` branch of this workshop repository. The schema changes made during Part 1 can affect the reference queries, so use a new Codespace for Part 2 and leave your Part 1 work in its existing branch and Codespace.
+
+1. If you are working in your own fork, use **Sync fork** to bring its `main` branch up to date with this repository. Confirm that `eval/prompts/semantic.json` and `.github/workflows/prompt-map.yml` are present.
+
+2. In the repository where you will push your exercise branch, open the **Actions** tab. If GitHub asks you to enable workflows in your fork, enable them before the PR exercise.
+
+3. From `main`, select the green **Code** button, then **Codespaces**, then the option to create a new Codespace. Use **New with options** if you need to select the machine. Choose **4 cores and 16 GB RAM**.
+
+4. Wait for the development container to finish installing dependencies, applying database migrations, and loading the museum data. Open **Terminal > New Terminal** in the browser editor.
+
+Run the following commands from the repository root:
+
+```bash
+cd "$(git rev-parse --show-toplevel)"
+git status --short
+python3 --version
+docker version
+docker compose version
+```
+
+The Git status should be clean, Python should be version 3.12 or newer, and Docker should report a running server with Compose 2.20 or newer. If Docker or Compose is missing in an older Codespace, use the command palette to run **Codespaces: Rebuild Container**, then check again.
+
+Create your exercise branch:
+
+```bash
+git switch -c workshop/semantic-contracts
+```
+
+> [!NOTE]
+> Gemma runs locally on the Codespace's CPU through Docker Model Runner. No hosted inference account or API key is needed. The first model download is approximately 4.09 GB, in addition to the container images. Allow time for this setup and both evaluations; the earlier 1–3 minute database setup estimate does not cover the model. Codespaces compute and storage usage still apply.
+
+### II - Build the evaluation environment and check the database
+
+Run each command below separately. Continue only when it finishes successfully; if a setup command fails, resolve it before starting an evaluation.
+
+```bash
+python3 scripts/sql_eval.py build
+```
+
+This builds the agent and scorer images. Next, connect the evaluation to the existing workshop database and initialize the model:
+
+```bash
+python3 scripts/sql_eval.py start
+```
+
+The command grants the `eval_reader` role read-only access, connects the database to the evaluation network, downloads the pinned model if needed, and waits for a successful `READY` response. It does not reseed the museum data.
+
+Now validate the reference answers against your database:
+
+```bash
+python3 scripts/sql_eval.py verify-gold
+```
+
+You should see:
+
+```text
+All 20 reference queries agree with independent source-derived answers.
+```
+
+Finally, check that the agent cannot access the reference answers or scorer:
+
+```bash
+python3 scripts/sql_eval.py isolation
+```
+
+The output should confirm that the gold sentinel, scorer, repository mount, and Docker socket are absent from the agent image.
+
+If startup reports multiple PostgreSQL containers, list them:
+
+```bash
+docker ps --filter label=com.docker.compose.service=postgres --format '{{.Names}}'
+```
+
+Set `SQL_EVAL_DB_CONTAINER` to the name of this Codespace's workshop database, then rerun `start`. For example, if the listed name is `myworkshop-postgres-1`:
+
+```bash
+export SQL_EVAL_DB_CONTAINER=myworkshop-postgres-1
+python3 scripts/sql_eval.py start
+```
+
+Use the actual container name from your output. If reference validation fails, check that you started from the current `main` and its seeded database. Keep the reference answers unchanged.
+
+### III - Run and score the current prompt
+
+First, create a new evidence directory and give each run a copy of the same frozen budget:
+
+```bash
+set -o pipefail
+mkdir -p artifacts
+run_dir=$(mktemp -d "$PWD/artifacts/map-manual-XXXXXX")
+printf '%s\n' "$run_dir" > artifacts/map-manual-latest.txt
+mkdir "$run_dir/current" "$run_dir/semantic"
+cp eval/rehearsal-budget.json "$run_dir/current/budget.json"
+cp eval/rehearsal-budget.json "$run_dir/semantic/budget.json"
+printf 'Evidence directory: %s\n' "$run_dir"
+```
+
+Keep this terminal open. If you open a new terminal later, return to the repository root and recover the evidence path with `run_dir=$(cat artifacts/map-manual-latest.txt)`. Run `set -o pipefail` there too so a failed command remains a failure when its output is passed through `tee`.
+
+Open [eval/prompts/current.json](eval/prompts/current.json) in the editor. Leave it unchanged. Its semantic settings are converted into instructions by [sql_eval/prompts.py](sql_eval/prompts.py). You can read those rendered instructions with:
+
+```bash
+python3 - <<'PY'
+import json
+from pathlib import Path
+from sql_eval.prompts import render
+print(render(json.loads(Path('eval/prompts/current.json').read_text())))
+PY
+```
+
+The runner adds the database context, question, and query/answer protocol to those instructions. Start the first evaluation:
+
+```bash
+python3 scripts/sql_eval.py run --stage improved \
+  --prompt eval/prompts/current.json \
+  --artifacts "$run_dir/current" 2>&1 | tee "$run_dir/current-run.log"
+```
+
+The terminal prints progress for `q01` through `q20`. Wait for the process to finish before scoring it:
+
+```bash
+python3 scripts/sql_eval.py score --stage improved \
+  --artifacts "$run_dir/current" 2>&1 | tee "$run_dir/current-score.log"
+```
+
+Record the number correct out of 20 printed by the scorer. The report is saved in `current/reports/improved.json` within your evidence directory and includes the elapsed evaluation time. Errors and wrong answers are part of the result; keep them in the record.
+
+> [!NOTE]
+> Both runs use the internal stage name `improved`. The `--prompt` argument selects the actual prompt, while the separate `current` and `semantic` directories keep the evidence apart. Keep the budget, model, questions, and database unchanged between runs. If you need to repeat the comparison, create a new evidence directory rather than overwrite a previous run.
+
+### IV - Run and score the semantics-focused prompt
+
+Open [eval/prompts/semantic.json](eval/prompts/semantic.json). The second prompt is already supplied so everyone can evaluate the same revision. It retains the first prompt's four semantic settings and adds these instructions:
+
+- `sample_scope`: count museum object records, with one object identified by `object_id`.
+- `field_meaning`: use the named museum field rather than a related label or proxy.
+- `aggregation`: preserve the requested counting, grouping, and missing-value rules.
+- `answer_values`: submit the query's returned rows without recalculating or substituting values.
+
+Read the full rendered instructions:
+
+```bash
+python3 - <<'PY'
+import json
+from pathlib import Path
+from sql_eval.prompts import render
+print(render(json.loads(Path('eval/prompts/semantic.json').read_text())))
+PY
+```
+
+Run the second evaluation against the same 20 questions:
+
+```bash
+python3 scripts/sql_eval.py run --stage improved \
+  --prompt eval/prompts/semantic.json \
+  --artifacts "$run_dir/semantic" 2>&1 | tee "$run_dir/semantic-run.log"
+```
+
+When it finishes, score the submitted answers:
+
+```bash
+python3 scripts/sql_eval.py score --stage improved \
+  --artifacts "$run_dir/semantic" 2>&1 | tee "$run_dir/semantic-score.log"
+```
+
+The second report is saved in `semantic/reports/improved.json` within your evidence directory. You now have two scored runs with the prompt as the changed input.
+
+### V - Compare the scores and inspect the answers
+
+Run the comparison:
+
+```bash
+python3 scripts/compare_map_eval.py \
+  "$run_dir/current/reports/improved.json" \
+  "$run_dir/semantic/reports/improved.json" \
+  --out "$run_dir/comparison.json"
+```
+
+The script checks that the recorded controls match. Its output includes each score and elapsed time, `delta` for the change in correct answers, `fixed` for questions that became correct, and `regressed` for questions that became incorrect.
+
+For context, our [recorded local comparison](docs/evidence/prompt-map/README.md) produced the following results:
+
+| Prompt | Correct answers | Accuracy | Evaluation time |
+| --- | ---: | ---: | ---: |
+| Current | 12/20 | 60% | 283.324 seconds |
+| Semantics-focused | 15/20 | 75% | 351.284 seconds |
+
+That run improved by three correct answers, or 15 percentage points, with six fixes and three regressions. Your results may differ. Record a tie or decline as observed; do not change the questions, reference answers, or limits to obtain a desired score. One paired run is a teaching diagnostic, not a general model benchmark.
+
+To inspect an individual attempt, open the JSON files under `current/improved/` and `semantic/improved/` in the evidence directory. For example:
+
+```bash
+python3 -m json.tool "$run_dir/current/improved/q01.json"
+python3 -m json.tool "$run_dir/semantic/improved/q01.json"
+```
+
+Each question's record contains the model responses, SQL action, result or error, and submitted answer when available. Use the per-question entries in the score reports to identify which attempts to compare. The `manifest.json` beside those records preserves the selected prompt and run controls.
+
+We have finished the model evaluations. Stop the model before continuing with the contract exercise:
+
+```bash
+python3 scripts/sql_eval.py stop
+```
+
+This retains the database, downloaded model cache, and evaluation evidence.
+
+### VI - Apply the MAP in the original data contract
+
+Open [object_images_contract_spec.json](data_contract_components/contract_definition/object_images_contract_spec.json), the original contract from Part 1. Its new `metadataApplicationProfile` section is already included in `main`, alongside the existing database contract fields.
+
+The section identifies `eval/prompts/semantic.json` as the governed prompt. It contains approved instructions and eight required semantic elements. Here is the missing-text element from that section:
+
+```json
+{
+  "id": "missing_text",
+  "prompt_path": "semantics.missing_text",
+  "required": true,
+  "max_occurs": 1,
+  "value_type": "string",
+  "required_value": "null_or_blank",
+  "applies_to": [
+    "object.artist_display_name",
+    "object_history.culture",
+    "object_physical_properties.classification",
+    "object_physical_properties.medium",
+    "object_images.primary_image"
+  ],
+  "definition": "Treat NULL and empty or whitespace-only text as missing. For populated text, use NULLIF(BTRIM(column), '') IS NOT NULL."
+}
+```
+
+This element connects the prompt setting to its required value, field scope, and SQL interpretation. Leave the MAP and the original database schema section unchanged during the violation exercise.
+
+Validate the approved prompt:
+
+```bash
+python3 scripts/check_prompt_map.py \
+  --report "$run_dir/map-pass.json" \
+  --markdown "$run_dir/map-pass.md"
+```
+
+The output should include `Prompt MAP: PASS`, and the command should exit successfully. The checker validates the declared settings, approved instruction text, and rendered rule definitions. It does not call the model or prove that the model will always follow those instructions. The evaluations measure answer behavior; this check verifies the prompt's agreement with the MAP.
+
+### VII - Change the prompt and trigger a MAP violation
+
+Suppose someone proposes simplifying the prompt so that only SQL `NULL` counts as missing text. In `eval/prompts/semantic.json`, change this one value:
+
+```json
+"missing_text": "null_or_blank"
+```
+
+To:
+
+```json
+"missing_text": "null_only"
+```
+
+Save the file. Keep the contract and the other prompt settings unchanged. Confirm the edit:
+
+```bash
+git diff -- eval/prompts/semantic.json
+```
+
+Now run the checker again:
+
+```bash
+python3 scripts/check_prompt_map.py \
+  --report "$run_dir/map-fail.json" \
+  --markdown "$run_dir/map-fail.md"
+```
+
+This time, exit code 1 is expected. The report should contain:
+
+```text
+Prompt MAP: FAIL
+
+Rule: missing_text
+Expected: "null_or_blank"
+Actual: "null_only"
+Treat NULL and empty or whitespace-only text as missing. For populated text, use NULLIF(BTRIM(column), '') IS NOT NULL.
+```
+
+The proposed prompt is valid JSON, but its declared treatment of missing text violates the agreed MAP. We can detect that change without running another evaluation.
+
+### VIII - Push the violation and inspect the GitHub comment
+
+Commit only the changed prompt and push your exercise branch:
+
+```bash
+git add eval/prompts/semantic.json
+git commit -m "Demonstrate a missing-text MAP violation"
+git push -u origin workshop/semantic-contracts
+```
+
+Open your repository on GitHub and select **Compare & pull request**. Set the base to `main` and the compare branch to `workshop/semantic-contracts`.
+
+If you are using a fork, choose **your fork as both the base and head repository**. This keeps the exercise and its comments in your own repository. Use a title such as “Demonstrate and repair a prompt MAP violation,” then create the PR. Leave it open and unmerged while the checks run.
+
+In the PR's **Checks** tab, open **Prompt MAP contract**. It should fail on `missing_text`, showing the expected and actual values. The workflow's summary and `prompt-map-report` artifact also contain the details. The SQL evaluation test job may fail as well because it checks that the committed prompt satisfies the MAP.
+
+Then return to the PR's **Conversation** tab. After the separate comment job finishes, you should see a bot comment headed **Prompt MAP: FAIL**, with the rule, values, tested commit, and a link to the run. A push run and a PR run can both appear for the same commit; the PR run produces the comment.
+
+The workflow has no branch filters: it validates pushes and PRs targeting any branch. For a PR, the base branch supplies the approved MAP and checker. Changing the contract alongside the prompt does not silently approve a new interpretation.
+
+> [!NOTE]
+> The comment explains the failure. We are skipping required-check configuration in this walkthrough, so do not use the presence or absence of an enabled merge button as the test result. Read the failed MAP check itself. If a comment is missing, inspect **Explain MAP result / explain** in the PR's workflow run and confirm that Actions is enabled. For a PR sent from a fork to another repository, the target's default-branch reporter and any required workflow approval must be available; details remain in the check summary if GitHub cannot associate the run with one PR.
+
+### IX - Repair the prompt and see the checks pass
+
+Return to your Codespace. In `eval/prompts/semantic.json`, restore the agreed value:
+
+```json
+"missing_text": "null_or_blank"
+```
+
+Save the file and validate it:
+
+```bash
+python3 scripts/check_prompt_map.py \
+  --report "$run_dir/map-repaired.json" \
+  --markdown "$run_dir/map-repaired.md"
+```
+
+The checker should report `Prompt MAP: PASS`. Confirm that your repair changes only the missing-text value, then commit and push it:
+
+```bash
+git diff -- eval/prompts/semantic.json
+git add eval/prompts/semantic.json
+git commit -m "Restore MAP-compliant missing-text semantics"
+git push
+```
+
+Open the same PR and wait for the checks on the latest commit. **Prompt MAP contract** should pass, and the bot should update its existing comment to **Prompt MAP: PASS**. Compare the commit shown in that comment with the latest commit on your branch. The failed run remains available in the PR's history.
+
+Because you restored the original value, the PR may now have no net file changes relative to `main`. That is expected: its two commits and workflow runs document the violation and repair. You can close this demonstration PR once you have inspected the results. No model rerun or contract change is needed for the repair.
+
+### X - Keep the evidence and stop the Codespace
+
+Your evidence directory contains both scored runs, the comparison, and the passing, failing, and repaired MAP reports. The `artifacts/` directory is ignored by Git, so these files will not be included in your prompt commits.
+
+Before deleting the Codespace, download the evidence directory through the editor's Explorer, or create a single archive to download:
+
+```bash
+tar -czf "${run_dir}.tar.gz" -C "$(dirname "$run_dir")" "$(basename "$run_dir")"
+```
+
+Right-click the generated `.tar.gz` file in the Explorer and select **Download**. If you stopped the walkthrough before step V, stop the model now with `python3 scripts/sql_eval.py stop`. Finally, use the command palette's **Codespaces: Stop Current Codespace**, or stop it from the [GitHub Codespaces dashboard](https://github.com/codespaces).
+
+## Part 2 Conclusion
+
+We have followed the same change, detect, and repair workflow used for database contracts in Part 1. This time, the proposed change affected the meaning of missing text in a prompt while the database schema stayed the same.
+
+You now have two kinds of evidence: scored model answers showing what happened under each prompt, and MAP checks showing whether a proposed prompt preserves the agreed metadata rules. The MAP lives in the original data contract, and its validation results appear in the same GitHub workflow used to review code changes.
