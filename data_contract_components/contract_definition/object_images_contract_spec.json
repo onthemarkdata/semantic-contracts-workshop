@@ -64,7 +64,7 @@
     },
     "metadataApplicationProfile": {
       "id": "museum-sql-prompt-map",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "title": "Museum SQL prompt metadata application profile",
       "purpose": "Describe the meaning and use of metadata in the fixed museum SQL exercise. This local application profile is not a Linked Art conformance claim.",
       "sources": [
@@ -188,6 +188,60 @@
       ],
       "promptAssetResourceName": "eval/prompts/semantic.json",
       "approved_instructions": "Translate the question into one PostgreSQL SELECT using the supplied schema. Resolve the entity, field, missing-value rule, aggregation, and requested output before writing SQL. Use the semantic rules below. After the query succeeds, copy its result rows exactly into the final answer; do not recalculate or substitute values. No retries are allowed.",
-      "scope": "Checks prompt declarations, approved instructions, and rendered rule definitions against the approved MAP. It does not prove model compliance or full Linked Art conformance."
+      "scope": "Checks prompt declarations, approved instructions, and rendered rule definitions against the approved MAP. It does not prove model compliance or full Linked Art conformance.",
+      "additionalProfiles": [
+        {
+          "id": "museum-sculpture-category-map",
+          "version": "1.0.0",
+          "title": "Workshop sculpture category membership",
+          "purpose": "A proposed local definition for a separate sculpture-counting exercise. This explicit category group is not a claim that every sculpture in the museum is classified here, or that the source conforms to Linked Art.",
+          "question": "How many sculptures are in our sample?",
+          "promptAssetResourceName": "eval/prompts/sculpture.json",
+          "approved_instructions": "Answer the workshop question: How many sculptures are in our sample? Use the supplied sculpture category definition to select object records from object_physical_properties, count distinct object_id values, and return the count. Preserve the approved category membership and report unclassified records as unknown when discussing coverage.",
+          "sources": [
+            {
+              "path": "data_contract_components/data_assets/db_migrations/raw_data/objects.json",
+              "field": "classification",
+              "use": "The 17 listed source labels explicitly name sculpture. Their membership is proposed for review and is not expanded by substring matching at runtime."
+            }
+          ],
+          "scope": "Count one object_id for each record with a listed classification. NULL, empty, and space-only classifications remain unknown; other labels are outside this local count, not declarations that those objects cannot be sculptures. No equivalence with a Linked Art concept or AAT identifier is asserted.",
+          "elements": [
+            {
+              "id": "sculpture_categories",
+              "prompt_path": "semantics.sculpture_categories",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "array",
+              "items_type": "string",
+              "unique_items": true,
+              "required_value": [
+                "Bark-Sculpture",
+                "Beads-Sculpture",
+                "Bone/Ivory-Sculpture",
+                "Ceramics-Sculpture",
+                "Metal-Sculpture",
+                "Sculpture",
+                "Sculpture-Alabaster",
+                "Sculpture-Architectural",
+                "Sculpture-Architectural-Stone",
+                "Sculpture-Bronze",
+                "Sculpture-Ceramics",
+                "Sculpture-Miniature",
+                "Sculpture-Stone",
+                "Sculpture-Wood",
+                "Stone Sculpture",
+                "Stone-Sculpture",
+                "Wood-Sculpture"
+              ],
+              "applies_to": [
+                "object_physical_properties.classification",
+                "object_physical_properties.object_id"
+              ],
+              "definition": "For this workshop, a sculpture is one museum object record whose object_physical_properties.classification, after trimming surrounding spaces, exactly matches a listed category. Count each object_id once. Use the complete explicit list below; do not replace it with classification = 'Sculpture', a substring search, or a guess from material, title, or object name. NULL, empty, and space-only classifications are unknown and excluded from the count; exclusion does not establish that an object is not a sculpture. Listed categories:"
+            }
+          ]
+        }
+      ]
     }
   }

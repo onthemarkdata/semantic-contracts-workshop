@@ -1,0 +1,74 @@
+{
+  "question": "How many sculptures are in our sample?",
+  "measurement": "Deterministic category counts; no model evaluation or accuracy score.",
+  "source": "data_contract_components/data_assets/db_migrations/raw_data/objects.json",
+  "records": 3025,
+  "unclassified_unknown": 1457,
+  "approved": {
+    "categories": [
+      "Bark-Sculpture",
+      "Beads-Sculpture",
+      "Bone/Ivory-Sculpture",
+      "Ceramics-Sculpture",
+      "Metal-Sculpture",
+      "Sculpture",
+      "Sculpture-Alabaster",
+      "Sculpture-Architectural",
+      "Sculpture-Architectural-Stone",
+      "Sculpture-Bronze",
+      "Sculpture-Ceramics",
+      "Sculpture-Miniature",
+      "Sculpture-Stone",
+      "Sculpture-Wood",
+      "Stone Sculpture",
+      "Stone-Sculpture",
+      "Wood-Sculpture"
+    ],
+    "count": 296
+  },
+  "proposed": {
+    "categories": [
+      "Sculpture"
+    ],
+    "count": 151
+  },
+  "delta": -145,
+  "excluded_approved_categories": {
+    "Bark-Sculpture": 2,
+    "Beads-Sculpture": 1,
+    "Bone/Ivory-Sculpture": 2,
+    "Ceramics-Sculpture": 8,
+    "Metal-Sculpture": 4,
+    "Sculpture-Alabaster": 1,
+    "Sculpture-Architectural": 6,
+    "Sculpture-Architectural-Stone": 3,
+    "Sculpture-Bronze": 8,
+    "Sculpture-Ceramics": 1,
+    "Sculpture-Miniature": 1,
+    "Sculpture-Stone": 11,
+    "Sculpture-Wood": 10,
+    "Stone Sculpture": 39,
+    "Stone-Sculpture": 8,
+    "Wood-Sculpture": 40
+  },
+  "added_unapproved_categories": {},
+  "approved_category_counts": {
+    "Bark-Sculpture": 2,
+    "Beads-Sculpture": 1,
+    "Bone/Ivory-Sculpture": 2,
+    "Ceramics-Sculpture": 8,
+    "Metal-Sculpture": 4,
+    "Sculpture": 151,
+    "Sculpture-Alabaster": 1,
+    "Sculpture-Architectural": 6,
+    "Sculpture-Architectural-Stone": 3,
+    "Sculpture-Bronze": 8,
+    "Sculpture-Ceramics": 1,
+    "Sculpture-Miniature": 1,
+    "Sculpture-Stone": 11,
+    "Sculpture-Wood": 10,
+    "Stone Sculpture": 39,
+    "Stone-Sculpture": 8,
+    "Wood-Sculpture": 40
+  }
+}

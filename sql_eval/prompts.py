@@ -1,6 +1,9 @@
 """Render explicit semantic choices and check the protected prompt."""
 
+import json
+
 RULES = {
+    "sculpture_categories": {"explicit_list": "For this workshop, a sculpture is one museum object record whose object_physical_properties.classification, after trimming surrounding spaces, exactly matches a listed category. Count each object_id once. Use the complete explicit list below; do not replace it with classification = 'Sculpture', a substring search, or a guess from material, title, or object name. NULL, empty, and space-only classifications are unknown and excluded from the count; exclusion does not establish that an object is not a sculpture. Listed categories:"},
     "missing_text": {
         "null_or_blank": "Treat NULL and empty or whitespace-only text as missing. For populated text, use NULLIF(BTRIM(column), '') IS NOT NULL.",
         "null_only": "For simpler filters, treat only NULL as missing. Use IS NOT NULL to count populated text, including blank strings.",
@@ -18,6 +21,13 @@ RULES = {
 def render(prompt):
     parts = [prompt["instructions"]]
     for key, value in prompt.get("semantics", {}).items():
+        if key == 'sculpture_categories':
+            if (not isinstance(value, list) or not value
+                    or not all(isinstance(v, str) and v.strip() for v in value)
+                    or len(value) != len(set(value))):
+                raise ValueError('Sculpture categories must be distinct, nonempty strings.')
+            parts.append(RULES[key]['explicit_list'] + '\n' + json.dumps(value, ensure_ascii=False))
+            continue
         try:
             parts.append(RULES[key][value])
         except KeyError:

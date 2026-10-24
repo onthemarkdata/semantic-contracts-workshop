@@ -1,5 +1,13 @@
 # Semantic contracts workshop: review proposal
 
+> **Sculpture category follow-up:** Add a separate, proposed MAP profile inside
+> the original contract for an explicit group of 17 sculpture classifications.
+> Compare its 296 object records with the 151 selected by the exact label
+> `Sculpture`, then demonstrate a category-membership violation in a stacked PR.
+> Preserve the existing 20-question evaluations and missing-text exercise. These
+> are deterministic object counts, not new model accuracy scores. See the
+> [category evidence](evidence/sculpture-map/README.md).
+
 > **Current MAP workflow:** Mark requested two evaluations: preserve the current
 > prompt for the first, then test a semantics-focused prompt with unchanged
 > questions and scoring. Add the MAP as a new section of the original data
