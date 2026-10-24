@@ -1,0 +1,28 @@
+{
+  "repository": "https://github.com/linked-art/linked.art",
+  "revision": "bcbff1761e65f44eeaeb92b4b2b83da2783539f8",
+  "license": "CC BY 4.0",
+  "modified": false,
+  "files": {
+    "object.json": {
+      "path": "docs/api/1.0/schema/object.json",
+      "source": "https://github.com/linked-art/linked.art/blob/bcbff1761e65f44eeaeb92b4b2b83da2783539f8/docs/api/1.0/schema/object.json",
+      "sha256": "b2de09e39ff0201bcbbb2bf8616996feafd32645c577d5d04621bd294675affb"
+    },
+    "core.json": {
+      "path": "docs/api/1.0/schema/core.json",
+      "source": "https://github.com/linked-art/linked.art/blob/bcbff1761e65f44eeaeb92b4b2b83da2783539f8/docs/api/1.0/schema/core.json",
+      "sha256": "adc8f1e48d7d0fa4fe6159fee20e0fb93901cd0e5252e8ed85cf476d6d57595b"
+    },
+    "linked-art.json": {
+      "path": "docs/ns/v1/linked-art.json",
+      "source": "https://github.com/linked-art/linked.art/blob/bcbff1761e65f44eeaeb92b4b2b83da2783539f8/docs/ns/v1/linked-art.json",
+      "sha256": "3017421203aba8ea73f159aced1285e35b37cee49b5648cf19b01f237025f165"
+    },
+    "LICENSE": {
+      "path": "LICENSE",
+      "source": "https://github.com/linked-art/linked.art/blob/bcbff1761e65f44eeaeb92b4b2b83da2783539f8/LICENSE",
+      "sha256": "facabc4ea39e45639fa6b4d3a3be4f85a20d8409b4c2dc9442bad1453cb130a3"
+    }
+  }
+}

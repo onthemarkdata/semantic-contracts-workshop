@@ -19,7 +19,8 @@ class SculptureMapTests(unittest.TestCase):
     def test_both_prompt_assets_are_checked(self):
         result = check(ROOT, ROOT)
         self.assertEqual(result['status'], 'pass')
-        self.assertEqual(result['checked_assets'], ['eval/prompts/semantic.json', PROMPT])
+        self.assertEqual(result['checked_assets'], ['eval/prompts/semantic.json', PROMPT,
+                                                  'eval/prompts/linked-art-sculpture.json'])
 
     def test_narrowed_membership_fails_with_excluded_categories(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -1,0 +1,13 @@
+{
+  "status": "pass",
+  "asset": "eval/prompts/linked-art-sculpture.json",
+  "mapped_records": 296,
+  "unclassified_unknown": 1457,
+  "unmapped_classified_records": 1272,
+  "expected_sculpture_count": 296,
+  "schema_valid": true,
+  "schema_invalid_records": 0,
+  "schema_errors": [],
+  "expanded_sculpture_count": 296,
+  "violations": []
+}
