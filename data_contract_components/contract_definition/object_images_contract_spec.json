@@ -64,7 +64,7 @@
     },
     "metadataApplicationProfile": {
       "id": "museum-sql-prompt-map",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "title": "Museum SQL prompt metadata application profile",
       "purpose": "Describe the meaning and use of metadata in the fixed museum SQL exercise. This local application profile is not a Linked Art conformance claim.",
       "sources": [
@@ -334,6 +334,195 @@
             }
           ],
           "scope": "Pinned upstream JSON Schema validation plus offline JSON-LD expansion and local MAP constraints. Passing these checks does not establish full Linked Art conformance or curatorial validity of the mapping."
+        },
+        {
+          "id": "museum-linked-art-met-sql-map",
+          "version": "1.0.0",
+          "title": "Met sample sculpture prompt application profile",
+          "purpose": "Apply the shared Linked Art Sculpture concept to the existing Met sample classification agreement through prompt instructions. No database schema, query-tool behavior, or upstream definition is changed.",
+          "promptAssetResourceName": "eval/prompts/linked-art-met-map.json",
+          "approved_instructions": "Translate the question into one PostgreSQL SELECT using the supplied schema. Resolve the entity, field, missing-value rule, aggregation, and requested output before writing SQL. Use the semantic rules below. After the query succeeds, copy its result rows exactly into the final answer; do not recalculate or substitute values. No retries are allowed.\nLinked Art reference, embedded from the local recommended vocabulary (Object Types):\nSculpture (http://vocab.getty.edu/aat/300047090): Object created by carving or engraving a hard material or molding a malleable material\nWorkshop application: use the supplied source-category mapping for membership.\nLocal application profile for this Met sample: the supplied sculpture_categories list is the complete operational membership rule. The Linked Art description supplies the shared concept; it does not replace these source labels or authorize guessing membership from titles, media, or materials. Material, scale, and architectural variants in that list remain included. This local mapping is not an assertion that each Met label is exactly equivalent to the shared concept.\nChoose the scope from the question. Questions about artworks or the whole sample use all object records, unless the question explicitly requests sculptures. Do not apply the sculpture list to general artwork questions.\nFor mapped sculptures, compare the trimmed classification against every label in sculpture_categories. Preserve both word orders and spelling variants: Sculpture-Wood and Wood-Sculpture are separate labels, as are Stone Sculpture, Stone-Sculpture, and Sculpture-Stone. Before submitting the query, check that none of the listed labels was omitted.\nIf the question asks for mapped sculptures other than the exact label Sculpture, apply the complete membership list AND exclude that exact label. Do not count every object outside the exact label. Unknown membership means NULL or blank classification. Unmapped means a populated classification outside the complete list; exclude NULL, empty, and space-only values from that count. Neither unknown nor unmapped establishes that an object is not a sculpture. Use the supplied schema, qualified columns, and explicit joins for every referenced table. Do not invent nested table paths or extra tables.",
+          "elements": [
+            {
+              "id": "missing_text",
+              "prompt_path": "semantics.missing_text",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "null_or_blank",
+              "applies_to": [
+                "object.artist_display_name",
+                "object_history.culture",
+                "object_physical_properties.classification",
+                "object_physical_properties.medium",
+                "object_images.primary_image"
+              ],
+              "definition": "Treat NULL and empty or whitespace-only text as missing. For populated text, use NULLIF(BTRIM(column), '') IS NOT NULL."
+            },
+            {
+              "id": "object_key",
+              "prompt_path": "semantics.object_key",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "object_id",
+              "applies_to": [
+                "*.object_id"
+              ],
+              "definition": "Join museum tables on object_id. Count artworks at the object_id grain; do not multiply counts through expansions."
+            },
+            {
+              "id": "public_domain",
+              "prompt_path": "semantics.public_domain",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "explicit_true",
+              "applies_to": [
+                "object_copyright.is_public_domain"
+              ],
+              "definition": "Public domain means is_public_domain IS TRUE. An image URL alone does not establish public-domain status."
+            },
+            {
+              "id": "ordering",
+              "prompt_path": "semantics.ordering",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "question",
+              "applies_to": [
+                "query result columns and rows"
+              ],
+              "definition": "Return only requested columns in their requested order. Follow requested sorting and tie breakers; do not add a LIMIT unless requested."
+            },
+            {
+              "id": "sample_scope",
+              "prompt_path": "semantics.sample_scope",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "object_records",
+              "applies_to": [
+                "object.object_id"
+              ],
+              "definition": "In this exercise, artwork means one museum object record identified by object.object_id. This is a local counting convention, not evidence that every collection item is classified as an artwork in Linked Art. Do not count images, tags, or conceptual works as extra objects."
+            },
+            {
+              "id": "field_meaning",
+              "prompt_path": "semantics.field_meaning",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "museum_columns",
+              "applies_to": [
+                "museum schema"
+              ],
+              "definition": "Artist name is object.artist_display_name; title is object.title; department is object_gallery_info.department; culture is object_history.culture; classification and medium are in object_physical_properties; primary image URL is object_images.primary_image; public-domain status is object_copyright.is_public_domain. Use the stated field, not a related label or proxy."
+            },
+            {
+              "id": "aggregation",
+              "prompt_path": "semantics.aggregation",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "requested_grain",
+              "applies_to": [
+                "query result grain"
+              ],
+              "definition": "For populated text use NULLIF(BTRIM(column), '') IS NOT NULL; for missing text use NULLIF(BTRIM(column), '') IS NULL. Combine conditions with AND or OR exactly as asked. For object counts count object IDs, not distinct field values. For distinct values use DISTINCT; for counts per category GROUP BY that category. Join only the tables needed, using qualified object_id columns. Preserve the requested row grain and avoid extra columns."
+            },
+            {
+              "id": "answer_values",
+              "prompt_path": "semantics.answer_values",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "query_rows",
+              "applies_to": [
+                "final.rows"
+              ],
+              "definition": "The query tool returns columns and rows. Submit only its complete rows array as the final rows value, preserving numbers, strings, NULLs, duplicates, and row order. Do not return SQL, column names, explanations, or numbers remembered from other questions."
+            },
+            {
+              "id": "sculpture_categories",
+              "prompt_path": "semantics.sculpture_categories",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "array",
+              "items_type": "string",
+              "unique_items": true,
+              "required_value": [
+                "Bark-Sculpture",
+                "Beads-Sculpture",
+                "Bone/Ivory-Sculpture",
+                "Ceramics-Sculpture",
+                "Metal-Sculpture",
+                "Sculpture",
+                "Sculpture-Alabaster",
+                "Sculpture-Architectural",
+                "Sculpture-Architectural-Stone",
+                "Sculpture-Bronze",
+                "Sculpture-Ceramics",
+                "Sculpture-Miniature",
+                "Sculpture-Stone",
+                "Sculpture-Wood",
+                "Stone Sculpture",
+                "Stone-Sculpture",
+                "Wood-Sculpture"
+              ],
+              "applies_to": [
+                "object_physical_properties.classification",
+                "object_physical_properties.object_id"
+              ],
+              "definition": "For this workshop, a sculpture is one museum object record whose object_physical_properties.classification, after trimming surrounding spaces, exactly matches a listed category. Count each object_id once. Use the complete explicit list below; do not replace it with classification = 'Sculpture', a substring search, or a guess from material, title, or object name. NULL, empty, and space-only classifications are unknown and excluded from the count; exclusion does not establish that an object is not a sculpture. Listed categories:"
+            }
+          ],
+          "sources": [
+            {
+              "path": "vendor/linked-art/guidance/recommended-vocabulary.md",
+              "section": "Object Types / Sculpture",
+              "revision": "bcbff1761e65f44eeaeb92b4b2b83da2783539f8",
+              "uri": "http://vocab.getty.edu/aat/300047090",
+              "upstream_description": "Object created by carving or engraving a hard material or molding a malleable material",
+              "license": "CC BY 4.0",
+              "modification": "Upstream description preserved; local operational rules are separate."
+            },
+            {
+              "path": "data_contract_components/data_assets/db_migrations/raw_data/objects.json",
+              "field": "classification",
+              "use": "Retain the existing 17-label workshop membership; do not infer categories from titles or media."
+            }
+          ],
+          "localDefinition": {
+            "unit": "One source object_id.",
+            "membership": "Trim surrounding spaces using PostgreSQL BTRIM and match the complete sculpture_categories list exactly. Preserve spelling, punctuation, and word-order variants.",
+            "scope": "Apply sculpture membership only when the question requests sculptures. General artwork/sample questions retain the full object population.",
+            "relation": "A local broader-concept assertion for this workshop; not exact equivalence between every Met label and the AAT concept.",
+            "exclude_exact_label": "For mapped sculptures other than the exact label Sculpture, apply membership AND exclude that label.",
+            "unknown": "NULL, empty, and space-only source classifications remain unknown.",
+            "unmapped": "Other populated source classifications remain unmapped, not evidence of non-sculpture.",
+            "inference_boundary": "No automatic runtime enforcement or SQL rewrite. The model must follow these prompt rules; the MAP check verifies the prompt configuration, not the generated answers."
+          },
+          "review": {
+            "basis": "Desk review of classification, title, medium, and objectID in the checked-in sample; no image inspection or curator validation.",
+            "decision": "Retain the existing 17-category agreement. No membership or gold answers changed to accommodate an eval failure.",
+            "pending_curatorial_cases": [
+              {
+                "categories": [
+                  "Sculpture-Architectural",
+                  "Sculpture-Architectural-Stone"
+                ],
+                "reason": "Examples include a table, fountain, doorway, and architectural ensemble. Review overlap with furniture, decorative arts, and Architecture; keep one source objectID as the workshop unit."
+              },
+              {
+                "categories": [
+                  "Bark-Sculpture",
+                  "Beads-Sculpture"
+                ],
+                "reason": "Examples include masks and a masquerade crest. Mixed materials and cultural function require curatorial judgment; the source labels remain included in the local agreement."
+              }
+            ]
+          }
         }
       ]
     }

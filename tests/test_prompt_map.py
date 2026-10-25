@@ -25,6 +25,7 @@ def candidate(root):
     from scripts.linked_art_sculpture import PROTECTED_FILES
     for relative in (CONTRACT, 'eval/prompts/semantic.json', 'eval/prompts/sculpture.json',
                      'eval/prompts/linked-art-sculpture.json',
+                     'eval/prompts/linked-art-met-map.json',
                      'sql_eval/prompts.py', 'scripts/check_prompt_map.py', *PROTECTED_FILES):
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -32,6 +33,18 @@ def candidate(root):
 
 
 class PromptMapTests(unittest.TestCase):
+    def test_met_application_profile_rejects_an_omitted_category(self):
+        asset = 'eval/prompts/linked-art-met-map.json'
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            candidate(root)
+            prompt = json.loads((root / asset).read_text())
+            prompt['semantics']['sculpture_categories'].remove('Sculpture-Wood')
+            write(root / asset, prompt)
+            report = check(ROOT, root)
+            self.assertEqual([(v['asset'], v['rule']) for v in report['violations']],
+                             [(asset, 'sculpture_categories')])
+
     def test_map_is_an_extension_of_original_database_contract(self):
         contract = json.loads((ROOT / CONTRACT).read_text())
         self.assertEqual(contract['schema']['table_name'], 'object_images')
