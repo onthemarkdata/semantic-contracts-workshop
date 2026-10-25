@@ -1,0 +1,9 @@
+{
+  "inputs/prompt-only.json": "f28943a29e7e57938ea12e823818269c8a76087bb71d3eb8a59d72fd29a1adf2",
+  "inputs/prompt-map.json": "67e0c1238b0f7460433e069db1f090cd6a324005845a411fc8d7df043fbdd78f",
+  "inputs/questions.json": "00f5af9da7a195684e5a99bdf30e7d95ed8429e8ddcb5062f994cf8926d84b0a",
+  "inputs/prompt-map-linked-art.json": "53094eb03b2285006fe39d04345ef10b494587c6861aeb36e2d76e4986bbbe70",
+  "inputs/question-set.json": "d87cea286b00bf22c44898b8580353cd650c0eac8a6a5b7c66531f9425732649",
+  "inputs/gold/answers.json": "ee605eb7114db8deaa9f0fe30d080d76610415b9b2fecb99357855db59dc28db",
+  "budget.json": "fa516647a3fe5089cc79281f71bb8931050fcf7cbc25a263275eedc63f3b57e3"
+}

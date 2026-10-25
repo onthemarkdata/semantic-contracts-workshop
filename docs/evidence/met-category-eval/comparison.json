@@ -1,0 +1,78 @@
+{
+  "order": [
+    "prompt-only",
+    "prompt-map",
+    "prompt-map-linked-art"
+  ],
+  "scores": {
+    "prompt-only": {
+      "correct": 10,
+      "total": 20,
+      "elapsed_seconds": 179.868,
+      "sections": {
+        "basic": {
+          "correct": 9,
+          "total": 10
+        },
+        "hard": {
+          "correct": 1,
+          "total": 10
+        }
+      }
+    },
+    "prompt-map": {
+      "correct": 5,
+      "total": 20,
+      "elapsed_seconds": 255.296,
+      "sections": {
+        "basic": {
+          "correct": 5,
+          "total": 10
+        },
+        "hard": {
+          "correct": 0,
+          "total": 10
+        }
+      }
+    },
+    "prompt-map-linked-art": {
+      "correct": 8,
+      "total": 20,
+      "elapsed_seconds": 312.052,
+      "sections": {
+        "basic": {
+          "correct": 7,
+          "total": 10
+        },
+        "hard": {
+          "correct": 1,
+          "total": 10
+        }
+      }
+    }
+  },
+  "changes": [
+    {
+      "from": "prompt-only",
+      "to": "prompt-map",
+      "fixed": [],
+      "regressed": [
+        "q01",
+        "q02",
+        "q03",
+        "q08",
+        "q13"
+      ]
+    },
+    {
+      "from": "prompt-map",
+      "to": "prompt-map-linked-art",
+      "fixed": [
+        "q02",
+        "q03",
+        "q15"
+      ],
+      "regressed": []
+    }
+  ]
+}

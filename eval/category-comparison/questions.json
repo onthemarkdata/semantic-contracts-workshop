@@ -1,0 +1,132 @@
+[
+  {
+    "id": "q01",
+    "difficulty": "basic",
+    "question": "How many artworks are in the museum sample? Return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q02",
+    "difficulty": "basic",
+    "question": "How many artworks have a populated artist name? NULL, empty, and whitespace-only names are missing. Return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q03",
+    "difficulty": "basic",
+    "question": "How many artworks have a missing artist name? Include NULL, empty, and whitespace-only names. Return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q04",
+    "difficulty": "basic",
+    "question": "How many artworks are explicitly marked as public domain? Return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q05",
+    "difficulty": "basic",
+    "question": "How many artworks have a populated primary image URL? NULL, empty, and whitespace-only URLs are missing. Return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q06",
+    "difficulty": "basic",
+    "question": "How many artworks have no populated primary image URL? Include NULL, empty, and whitespace-only URLs. Return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q07",
+    "difficulty": "basic",
+    "question": "How many artworks belong to the Asian Art department? Return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q08",
+    "difficulty": "basic",
+    "question": "How many artworks have a populated classification? NULL, empty, and whitespace-only classifications are missing. Return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q09",
+    "difficulty": "basic",
+    "question": "Return object ID and title for the five artworks with the smallest object IDs, in ascending ID order.",
+    "ordered": true
+  },
+  {
+    "id": "q10",
+    "difficulty": "basic",
+    "question": "How many artworks have a populated culture? NULL, empty, and whitespace-only culture values are missing. Return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q11",
+    "difficulty": "medium",
+    "category": "Sculpture",
+    "question": "Using object_physical_properties.classification, how many sculptures are in the sample? Count each object_id once and return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q12",
+    "difficulty": "medium",
+    "category": "Painting",
+    "question": "Using object_physical_properties.classification, how many paintings are in the sample? Count each object_id once and return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q13",
+    "difficulty": "medium",
+    "category": "Drawing",
+    "question": "Using object_physical_properties.classification, how many drawings are in the sample? Count each object_id once and return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q14",
+    "difficulty": "medium",
+    "category": "Print",
+    "question": "Using object_physical_properties.classification, how many prints are in the sample? Count each object_id once and return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q15",
+    "difficulty": "medium",
+    "category": "Furniture",
+    "question": "Using object_physical_properties.classification, how many furniture objects are in the sample? Count each object_id once and return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q16",
+    "difficulty": "medium",
+    "category": "Architectural objects",
+    "question": "Using object_physical_properties.classification, how many architectural objects are in the sample? Count each object_id once and return one count.",
+    "ordered": false
+  },
+  {
+    "id": "q17",
+    "difficulty": "medium",
+    "category": "Sculpture",
+    "question": "Using object_physical_properties.classification, return only the object IDs of the five sculptures with the smallest object IDs, sorted by object ID ascending.",
+    "ordered": true
+  },
+  {
+    "id": "q18",
+    "difficulty": "medium",
+    "category": "Architectural objects",
+    "question": "Using object_physical_properties.classification, return only the object IDs of the five architectural objects with the smallest object IDs, sorted by object ID ascending.",
+    "ordered": true
+  },
+  {
+    "id": "q19",
+    "difficulty": "medium",
+    "category": "Painting",
+    "question": "Using object_physical_properties.classification, return only the object IDs of the five paintings with the smallest object IDs, sorted by object ID ascending.",
+    "ordered": true
+  },
+  {
+    "id": "q20",
+    "difficulty": "medium",
+    "category": "Furniture",
+    "question": "Using object_physical_properties.classification, return only the object IDs of the five furniture objects with the smallest object IDs, sorted by object ID ascending.",
+    "ordered": true
+  }
+]

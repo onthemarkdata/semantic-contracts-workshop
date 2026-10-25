@@ -1,5 +1,17 @@
 # Semantic contracts workshop: review proposal
 
+> **Met category comparison:** Replace the ten harder questions in a new
+> comparison set with medium sculpture, painting, drawing, print, furniture, and
+> architectural-object questions; retain the ten basic questions. Use single-table
+> category counts and ordered ID lists. Preserve the completed hard-version run
+> as historical evidence. The medium set now has a separate three-condition
+> [recorded evaluation](evidence/met-category-medium-eval/README.md). Run the same
+> general prompt alone, with the local category MAP, and with that MAP plus six
+> pinned Linked Art definitions. Preserve the database, runtime, original README,
+> and historical question sets. See [the comparison](met-category-comparison.md).
+> The category mappings are reviewable workshop decisions, not curator-approved
+> equivalences. Improvement is measured, not required.
+
 > **Linked Art follow-up:** Extend the sculpture proposal with the official
 > Human-Made Object JSON Schema, JSON-LD context, and recommended Sculpture URI.
 > Keep source-label mapping decisions explicit and local. Demonstrate that

@@ -1,0 +1,13 @@
+{
+  "instructions": "Translate the question into one PostgreSQL SELECT using the supplied schema. Resolve the entity, field, missing-value rule, aggregation, and requested output before writing SQL. Use the semantic rules below. After the query succeeds, copy its result rows exactly into the final answer; do not recalculate or substitute values. No retries are allowed.\nLocal Met category MAP:\nEach category selects object IDs whose classification, after PostgreSQL BTRIM, exactly matches any of its listed labels. Use the complete list, preserving spelling and word order. Do not substitute substring matching or guesses from title or medium. General artwork questions use all object records. NULL, empty and space-only classifications are unknown; other labels are unmapped, not proof of non-membership. Categories may overlap: BOTH means intersection; EITHER means union, counting each object ID once. An exclusion of an exact label still requires category membership.\nSculpture: [\"Bark-Sculpture\", \"Beads-Sculpture\", \"Bone/Ivory-Sculpture\", \"Ceramics-Sculpture\", \"Metal-Sculpture\", \"Sculpture\", \"Sculpture-Alabaster\", \"Sculpture-Architectural\", \"Sculpture-Architectural-Stone\", \"Sculpture-Bronze\", \"Sculpture-Ceramics\", \"Sculpture-Miniature\", \"Sculpture-Stone\", \"Sculpture-Wood\", \"Stone Sculpture\", \"Stone-Sculpture\", \"Wood-Sculpture\"]\nPainting: [\"Miscellaneous-Paintings\", \"Paintings\", \"Paintings-Fresco\", \"Paintings-Panels\"]\nDrawing: [\"Drawings\"]\nPrint: [\"Prints\"]\nFurniture: [\"Furniture\", \"Furniture-Wood\", \"Wood-Furniture\", \"Woodwork-Furniture\"]\nArchitectural objects: [\"Sculpture-Architectural\", \"Sculpture-Architectural-Stone\", \"Wood-Architectural\"]\nSword Furniture-Tsuba is a sword fitting, excluded from Furniture. Architectural objects include the architectural sculpture labels and Wood-Architectural. Do not infer additional memberships from titles; these are workshop agreements, not exhaustive curatorial classifications.",
+  "semantics": {
+    "missing_text": "null_or_blank",
+    "object_key": "object_id",
+    "public_domain": "explicit_true",
+    "ordering": "question",
+    "sample_scope": "object_records",
+    "field_meaning": "museum_columns",
+    "aggregation": "requested_grain",
+    "answer_values": "query_rows"
+  }
+}

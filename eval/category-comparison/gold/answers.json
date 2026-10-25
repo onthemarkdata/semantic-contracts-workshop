@@ -1,0 +1,230 @@
+{
+  "sentinel": "GOLD_ONLY_8b45b406_reference_answers",
+  "answers": {
+    "q01": {
+      "sql": "SELECT COUNT(*) FROM object",
+      "expected": [
+        [
+          3025
+        ]
+      ]
+    },
+    "q02": {
+      "sql": "SELECT COUNT(*) FROM object WHERE NULLIF(BTRIM(artist_display_name), '') IS NOT NULL",
+      "expected": [
+        [
+          2068
+        ]
+      ]
+    },
+    "q03": {
+      "sql": "SELECT COUNT(*) FROM object WHERE NULLIF(BTRIM(artist_display_name), '') IS NULL",
+      "expected": [
+        [
+          957
+        ]
+      ]
+    },
+    "q04": {
+      "sql": "SELECT COUNT(*) FROM object_copyright WHERE is_public_domain IS TRUE",
+      "expected": [
+        [
+          1985
+        ]
+      ]
+    },
+    "q05": {
+      "sql": "SELECT COUNT(*) FROM object_images WHERE NULLIF(BTRIM(primary_image), '') IS NOT NULL",
+      "expected": [
+        [
+          1985
+        ]
+      ]
+    },
+    "q06": {
+      "sql": "SELECT COUNT(*) FROM object_images WHERE NULLIF(BTRIM(primary_image), '') IS NULL",
+      "expected": [
+        [
+          1040
+        ]
+      ]
+    },
+    "q07": {
+      "sql": "SELECT COUNT(*) FROM object_gallery_info WHERE department = 'Asian Art'",
+      "expected": [
+        [
+          240
+        ]
+      ]
+    },
+    "q08": {
+      "sql": "SELECT COUNT(*) FROM object_physical_properties WHERE NULLIF(BTRIM(classification), '') IS NOT NULL",
+      "expected": [
+        [
+          1568
+        ]
+      ]
+    },
+    "q09": {
+      "sql": "SELECT object_id, title FROM object ORDER BY object_id LIMIT 5",
+      "expected": [
+        [
+          35,
+          "The Adams Vase"
+        ],
+        [
+          200,
+          "Spindle-back armchair"
+        ],
+        [
+          214,
+          "Armchair"
+        ],
+        [
+          237,
+          "Armchair"
+        ],
+        [
+          282,
+          "Autumn Landscape"
+        ]
+      ]
+    },
+    "q10": {
+      "sql": "SELECT COUNT(*) FROM object_history WHERE NULLIF(BTRIM(culture), '') IS NOT NULL",
+      "expected": [
+        [
+          1392
+        ]
+      ]
+    },
+    "q11": {
+      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture')",
+      "expected": [
+        [
+          296
+        ]
+      ]
+    },
+    "q12": {
+      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Miscellaneous-Paintings', 'Paintings', 'Paintings-Fresco', 'Paintings-Panels')",
+      "expected": [
+        [
+          353
+        ]
+      ]
+    },
+    "q13": {
+      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Drawings')",
+      "expected": [
+        [
+          113
+        ]
+      ]
+    },
+    "q14": {
+      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Prints')",
+      "expected": [
+        [
+          55
+        ]
+      ]
+    },
+    "q15": {
+      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Furniture', 'Furniture-Wood', 'Wood-Furniture', 'Woodwork-Furniture')",
+      "expected": [
+        [
+          23
+        ]
+      ]
+    },
+    "q16": {
+      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Wood-Architectural')",
+      "expected": [
+        [
+          13
+        ]
+      ]
+    },
+    "q17": {
+      "sql": "SELECT DISTINCT p.object_id FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') ORDER BY p.object_id LIMIT 5",
+      "expected": [
+        [
+          37397
+        ],
+        [
+          38124
+        ],
+        [
+          38127
+        ],
+        [
+          38133
+        ],
+        [
+          38146
+        ]
+      ]
+    },
+    "q18": {
+      "sql": "SELECT DISTINCT p.object_id FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Wood-Architectural') ORDER BY p.object_id LIMIT 5",
+      "expected": [
+        [
+          199003
+        ],
+        [
+          202115
+        ],
+        [
+          205351
+        ],
+        [
+          311294
+        ],
+        [
+          313697
+        ]
+      ]
+    },
+    "q19": {
+      "sql": "SELECT DISTINCT p.object_id FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Miscellaneous-Paintings', 'Paintings', 'Paintings-Fresco', 'Paintings-Panels') ORDER BY p.object_id LIMIT 5",
+      "expected": [
+        [
+          36029
+        ],
+        [
+          36131
+        ],
+        [
+          36451
+        ],
+        [
+          36457
+        ],
+        [
+          37788
+        ]
+      ]
+    },
+    "q20": {
+      "sql": "SELECT DISTINCT p.object_id FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Furniture', 'Furniture-Wood', 'Wood-Furniture', 'Woodwork-Furniture') ORDER BY p.object_id LIMIT 5",
+      "expected": [
+        [
+          194622
+        ],
+        [
+          195456
+        ],
+        [
+          195473
+        ],
+        [
+          198715
+        ],
+        [
+          202141
+        ]
+      ]
+    }
+  }
+}
