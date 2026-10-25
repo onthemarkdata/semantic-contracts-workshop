@@ -1,0 +1,34 @@
+{
+  "instructions": "Translate the question into one PostgreSQL SELECT using the supplied schema. Resolve the entity, field, missing-value rule, aggregation, and requested output before writing SQL. Use the semantic rules below. After the query succeeds, copy its result rows exactly into the final answer; do not recalculate or substitute values. No retries are allowed.",
+  "semantics": {
+    "missing_text": "null_or_blank",
+    "object_key": "object_id",
+    "public_domain": "explicit_true",
+    "ordering": "question",
+    "sample_scope": "object_records",
+    "field_meaning": "museum_columns",
+    "aggregation": "requested_grain",
+    "answer_values": "query_rows",
+    "sculpture_categories": [
+      "Bark-Sculpture",
+      "Beads-Sculpture",
+      "Bone/Ivory-Sculpture",
+      "Ceramics-Sculpture",
+      "Metal-Sculpture",
+      "Sculpture",
+      "Sculpture-Alabaster",
+      "Sculpture-Architectural",
+      "Sculpture-Architectural-Stone",
+      "Sculpture-Bronze",
+      "Sculpture-Ceramics",
+      "Sculpture-Miniature",
+      "Sculpture-Stone",
+      "Sculpture-Wood",
+      "Stone Sculpture",
+      "Stone-Sculpture",
+      "Wood-Sculpture"
+    ],
+    "linked_art_entity_type": "HumanMadeObject",
+    "linked_art_sculpture_type": "http://vocab.getty.edu/aat/300047090"
+  }
+}
