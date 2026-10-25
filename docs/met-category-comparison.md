@@ -1,6 +1,6 @@
 # Met categories: prompt, MAP, and Linked Art
 
-This experiment replaces the ten harder questions with questions about sculpture,
+This experiment replaces the ten harder questions with medium questions about sculpture,
 painting, drawing, print, furniture, and architectural objects. It keeps the ten
 basic questions unchanged. The replacement set lives in
 [`eval/category-comparison/questions.json`](../eval/category-comparison/questions.json);
@@ -64,20 +64,28 @@ object falls outside a category in the real world.
 
 | ID | Task |
 | --- | --- |
-| q11 | Count sculptures outside the exact label Sculpture |
-| q12 | Count public-domain paintings |
-| q13 | Count drawings by department |
-| q14 | Count public-domain prints with a populated primary image URL |
-| q15 | Count furniture across the agreed labels |
+| q11 | Count sculptures |
+| q12 | Count paintings |
+| q13 | Count drawings |
+| q14 | Count prints |
+| q15 | Count furniture |
 | q16 | Count architectural objects |
-| q17 | Count the intersection of sculpture and architectural objects |
-| q18 | Count their union without double-counting |
-| q19 | Count paintings outside the exact label Paintings |
-| q20 | List the first five furniture objects by object ID |
+| q17 | List the five smallest sculpture object IDs |
+| q18 | List the five smallest architectural-object IDs |
+| q19 | List the five smallest painting object IDs |
+| q20 | List the five smallest furniture object IDs |
 
-“Hard” identifies the replacement question group, not a measured difficulty
-rating. The reference answers are computed independently from the checked-in
-source JSON and checked against reference SQL before inference.
+Each question names `object_physical_properties.classification` explicitly.
+All reference queries use one table: category membership followed by either a
+count or an ordered list of five IDs. The medium set removes joins, grouped
+counts, category intersections/unions, and membership-plus-exclusion tasks.
+It still requires applying the complete category mapping, including label
+variants. “Medium” is an instructional choice, not a measured difficulty rating.
+
+The reference answers are computed independently from the checked-in source
+JSON and verified with read-only reference SQL. The three prompts and MAP
+membership definitions are unchanged. **The medium set has not had a model
+evaluation yet.** Earlier scores belong to the hard version.
 
 ## Run the comparison
 
@@ -90,7 +98,7 @@ python3 scripts/build_category_eval.py --check
 python3 scripts/sql_eval.py build
 docker compose -p workshop-sql-eval -f compose.models.yaml -f compose.eval.yaml up -d model-init
 docker compose -p workshop-sql-eval -f compose.models.yaml -f compose.eval.yaml wait model-init
-python3 scripts/run_category_eval.py --out artifacts/met-categories-run-1
+python3 scripts/run_category_eval.py --out artifacts/met-categories-medium-run-1
 python3 scripts/sql_eval.py stop
 ```
 
@@ -102,9 +110,11 @@ controls. Gold is mounted only in the separate scorer, after each agent exits;
 the model receives no scores or reference answers.
 
 For each condition, inspect its `*-reports/report.json` and question traces.
-`comparison.json` reports total, basic, and hard scores, plus fixes and
-regressions between adjacent conditions. The recorded comparison is in
-[`evidence/met-category-eval`](evidence/met-category-eval/README.md).
+`comparison.json` groups scores by the difficulty recorded in each run, so new
+runs report basic and medium scores while historical runs retain basic and hard
+scores. It also reports fixes and regressions between conditions. The
+[recorded hard-version comparison](evidence/met-category-eval/README.md) remains
+available as historical evidence; it does not score the current medium set.
 
 ## What GitHub checks
 
@@ -122,10 +132,11 @@ conformance or curatorial validity.
 
 ## Interpret the results
 
-All three runs use the new questions, so compare them with each other, not with
-the old 20- or 26-question totals. Report the ten basic and ten hard scores
-separately, along with per-question errors and elapsed time. There is one run per
-condition, in a fixed order, with no prompt revisions after seeing results.
+For the next evaluation, run all three conditions on the same medium questions.
+Report the ten basic and ten medium scores separately, along with per-question
+errors and elapsed time. Do not compare their totals directly with the recorded
+hard-version or older 20- and 26-question results. The runner uses one run per
+condition in a fixed order; keep the prompts fixed throughout the comparison.
 These are teaching diagnostics; they do not establish a statistically reliable
 gain. Extra Linked Art text may help, have no effect, or hurt. This SQL exercise
 also does not test interoperability between collections.

@@ -21,11 +21,12 @@ def compare(reports):
             raise ValueError('Run controls differ between conditions.')
         if [q['id'] for q in report['questions']] != ids:
             raise ValueError('Expected the complete 20-question comparison.')
+    difficulty = {q['id']: q['difficulty'] for q in first['controls']['questions']}
     result = {'order': list(CONDITIONS), 'scores': {}, 'changes': []}
     for name, report in reports.items():
         sections = {}
-        for section, numbers in [('basic', range(1, 11)), ('hard', range(11, 21))]:
-            selected = [q for q in report['questions'] if int(q['id'][1:]) in numbers]
+        for section in dict.fromkeys(difficulty[qid] for qid in ids):
+            selected = [q for q in report['questions'] if difficulty[q['id']] == section]
             sections[section] = {'correct': sum(q['correct'] for q in selected), 'total': len(selected)}
         result['scores'][name] = {k: report[k] for k in ('correct', 'total', 'elapsed_seconds')}
         result['scores'][name]['sections'] = sections

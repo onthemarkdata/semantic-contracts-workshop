@@ -16,16 +16,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class CategoryEvalTests(unittest.TestCase):
-    def test_only_hard_questions_replaced_and_fixtures_reproduce(self):
+    def test_medium_questions_preserve_basic_questions_and_six_categories(self):
         build(check=True)
         generated = generate()
         self.assertEqual(generated['questions.json'][:10], read_json(ROOT / 'eval/questions.json')[:10])
         self.assertEqual(generated['question-set.json'], [f'q{i:02}' for i in range(1, 21)])
+        self.assertEqual({q['difficulty'] for q in generated['questions.json'][10:]}, {'medium'})
         old = read_json(ROOT / 'eval/questions.json')
         self.assertTrue(all(new['question'] != prev['question'] for new, prev in
                             zip(generated['questions.json'][10:], old[10:])))
         self.assertEqual({q['category'] for q in generated['questions.json'][10:]},
-                         {'Sculpture', 'Painting', 'Drawing', 'Print', 'Furniture', 'Architectural objects', 'Overlap'})
+                         {'Sculpture', 'Painting', 'Drawing', 'Print', 'Furniture', 'Architectural objects'})
 
     def test_prompt_only_is_existing_general_prompt_and_linked_art_only_adds_references(self):
         fixtures = generate()
@@ -56,8 +57,15 @@ class CategoryEvalTests(unittest.TestCase):
         self.assertIn(491666, furniture)  # Furniture-Wood chair.
         answers = generate()['gold/answers.json']['answers']
         self.assertEqual(answers['q15']['expected'], [[23]])
-        self.assertEqual(answers['q17']['expected'], [[9]])
-        self.assertEqual(answers['q18']['expected'], [[300]])
+        self.assertEqual(answers['q11']['expected'], [[296]])
+        self.assertEqual(answers['q16']['expected'], [[13]])
+        for qid, category in [('q17', 'Sculpture'), ('q18', 'Architectural objects'),
+                              ('q19', 'Painting'), ('q20', 'Furniture')]:
+            expected = sorted(r['objectID'] for r in rows if r.get('classification') in mapping[category])[:5]
+            self.assertEqual(answers[qid]['expected'], [[object_id] for object_id in expected])
+        for ref in list(answers.values())[10:]:
+            self.assertNotIn('JOIN', ref['sql'])
+            self.assertNotIn('GROUP BY', ref['sql'])
 
     def test_prompt_change_violates_contract(self):
         asset = FIXTURES + '/prompt-map.json'
@@ -86,7 +94,7 @@ class CategoryEvalTests(unittest.TestCase):
                 budgets.append(read_json(paths['/budget.json']))
             elif '--run' in args:
                 write_json(paths['/reports'] / 'report.json', {
-                    'controls': {'question_ids': ids}, 'questions': [
+                    'controls': {'question_ids': ids, 'questions': read_json(paths['/app/eval/questions.json'])}, 'questions': [
                         {'id': qid, 'correct': True} for qid in ids],
                     'correct': 20, 'total': 20, 'elapsed_seconds': 1})
         with tempfile.TemporaryDirectory() as temp:
@@ -94,10 +102,17 @@ class CategoryEvalTests(unittest.TestCase):
             with patch('sys.argv', ['run', '--out', str(out)]), patch(
                     'scripts.run_category_eval.container_run', side_effect=container):
                 main()
-            self.assertEqual(read_json(out / 'comparison.json')['order'], list(CONDITIONS))
+            result = read_json(out / 'comparison.json')
+            self.assertEqual(result['order'], list(CONDITIONS))
+            self.assertEqual(set(result['scores'][CONDITIONS[0]]['sections']), {'basic', 'medium'})
         self.assertEqual(calls, ['eval-scorer'] + ['eval-agent', 'eval-scorer'] * 3)
         self.assertEqual(prompts, [read_json(ROOT / FIXTURES / (name + '.json')) for name in CONDITIONS])
         self.assertTrue(all(budget == budgets[0] for budget in budgets))
+
+    def test_historical_hard_results_keep_their_original_group(self):
+        evidence = ROOT / 'docs/evidence/met-category-eval'
+        reports = {name: read_json(evidence / (name + '-report.json')) for name in CONDITIONS}
+        self.assertEqual(compare(reports), read_json(evidence / 'comparison.json'))
 
     def test_comparison_rejects_changed_controls(self):
         report = {'controls': {'seed': 1}, 'questions': [

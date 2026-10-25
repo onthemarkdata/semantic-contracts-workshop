@@ -61,72 +61,72 @@
   },
   {
     "id": "q11",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "category": "Sculpture",
-    "question": "How many sculptures have a trimmed classification other than the exact label Sculpture? Return one count.",
+    "question": "Using object_physical_properties.classification, how many sculptures are in the sample? Count each object_id once and return one count.",
     "ordered": false
   },
   {
     "id": "q12",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "category": "Painting",
-    "question": "How many paintings are explicitly marked public domain? Return one count.",
+    "question": "Using object_physical_properties.classification, how many paintings are in the sample? Count each object_id once and return one count.",
     "ordered": false
   },
   {
     "id": "q13",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "category": "Drawing",
-    "question": "For each department with drawings, return department and drawing count, sorted by department ascending.",
-    "ordered": true
+    "question": "Using object_physical_properties.classification, how many drawings are in the sample? Count each object_id once and return one count.",
+    "ordered": false
   },
   {
     "id": "q14",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "category": "Print",
-    "question": "How many prints are explicitly marked public domain and have a populated primary image URL? NULL, empty, and whitespace-only URLs are missing. Return one count.",
+    "question": "Using object_physical_properties.classification, how many prints are in the sample? Count each object_id once and return one count.",
     "ordered": false
   },
   {
     "id": "q15",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "category": "Furniture",
-    "question": "How many furniture objects are in the sample? Return one count.",
+    "question": "Using object_physical_properties.classification, how many furniture objects are in the sample? Count each object_id once and return one count.",
     "ordered": false
   },
   {
     "id": "q16",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "category": "Architectural objects",
-    "question": "How many architectural objects are in the sample? Return one count.",
+    "question": "Using object_physical_properties.classification, how many architectural objects are in the sample? Count each object_id once and return one count.",
     "ordered": false
   },
   {
     "id": "q17",
-    "difficulty": "hard",
-    "category": "Overlap",
-    "question": "How many objects belong to BOTH sculpture and architectural objects? Count each object once. Return one count.",
-    "ordered": false
+    "difficulty": "medium",
+    "category": "Sculpture",
+    "question": "Using object_physical_properties.classification, return only the object IDs of the five sculptures with the smallest object IDs, sorted by object ID ascending.",
+    "ordered": true
   },
   {
     "id": "q18",
-    "difficulty": "hard",
-    "category": "Overlap",
-    "question": "How many objects belong to EITHER sculpture OR architectural objects, including those in both categories? Count each object once. Return one count.",
-    "ordered": false
+    "difficulty": "medium",
+    "category": "Architectural objects",
+    "question": "Using object_physical_properties.classification, return only the object IDs of the five architectural objects with the smallest object IDs, sorted by object ID ascending.",
+    "ordered": true
   },
   {
     "id": "q19",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "category": "Painting",
-    "question": "How many paintings have a trimmed classification other than the exact label Paintings? Return one count.",
-    "ordered": false
+    "question": "Using object_physical_properties.classification, return only the object IDs of the five paintings with the smallest object IDs, sorted by object ID ascending.",
+    "ordered": true
   },
   {
     "id": "q20",
-    "difficulty": "hard",
+    "difficulty": "medium",
     "category": "Furniture",
-    "question": "Return object ID, title, and classification for the five furniture objects with the smallest object IDs, sorted by ID ascending.",
+    "question": "Using object_physical_properties.classification, return only the object IDs of the five furniture objects with the smallest object IDs, sorted by object ID ascending.",
     "ordered": true
   }
 ]

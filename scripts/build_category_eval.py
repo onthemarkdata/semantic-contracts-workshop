@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Build the Met category comparison from the contract and independent source rows."""
-from collections import Counter
 from copy import deepcopy
 import hashlib
 import json
@@ -106,39 +105,25 @@ def generate(root=ROOT):
             'answers': {q['id']: old_gold['answers'][q['id']] for q in questions}}
     def add(number, category, question, sql, expected, ordered=False):
         qid = f'q{number:02}'
-        questions.append(dict(id=qid, difficulty='hard', category=category,
+        questions.append(dict(id=qid, difficulty='medium', category=category,
                               question=question, ordered=ordered))
         gold['answers'][qid] = dict(sql=sql, expected=expected)
-    add(11, 'Sculpture', 'How many sculptures have a trimmed classification other than the exact label Sculpture? Return one count.',
-        f"SELECT COUNT(DISTINCT p.object_id) FROM {table} WHERE {p['Sculpture']} AND BTRIM(p.classification) <> 'Sculpture'",
-        [[sum(label(r) != 'Sculpture' for r in selected['Sculpture'])]])
-    add(12, 'Painting', 'How many paintings are explicitly marked public domain? Return one count.',
-        f"SELECT COUNT(DISTINCT p.object_id) FROM {table} JOIN object_copyright c USING (object_id) WHERE {p['Painting']} AND c.is_public_domain IS TRUE",
-        [[sum(r.get('isPublicDomain') is True for r in selected['Painting'])]])
-    add(13, 'Drawing', 'For each department with drawings, return department and drawing count, sorted by department ascending.',
-        f"SELECT g.department, COUNT(DISTINCT p.object_id) FROM {table} JOIN object_gallery_info g USING (object_id) WHERE {p['Drawing']} GROUP BY g.department ORDER BY g.department",
-        [list(x) for x in sorted(Counter(r['department'] for r in selected['Drawing']).items())], True)
-    add(14, 'Print', 'How many prints are explicitly marked public domain and have a populated primary image URL? NULL, empty, and whitespace-only URLs are missing. Return one count.',
-        f"SELECT COUNT(DISTINCT p.object_id) FROM {table} JOIN object_copyright c USING (object_id) JOIN object_images i USING (object_id) WHERE {p['Print']} AND c.is_public_domain IS TRUE AND NULLIF(BTRIM(i.primary_image), '') IS NOT NULL",
-        [[sum(r.get('isPublicDomain') is True and bool((r.get('primaryImage') or '').strip(' ')) for r in selected['Print'])]])
-    add(15, 'Furniture', 'How many furniture objects are in the sample? Return one count.',
-        f"SELECT COUNT(DISTINCT p.object_id) FROM {table} WHERE {p['Furniture']}", [[len(selected['Furniture'])]])
-    add(16, 'Architectural objects', 'How many architectural objects are in the sample? Return one count.',
-        f"SELECT COUNT(DISTINCT p.object_id) FROM {table} WHERE {p['Architectural objects']}", [[len(selected['Architectural objects'])]])
-    sculpture_ids = {r['objectID'] for r in selected['Sculpture']}
-    architecture_ids = {r['objectID'] for r in selected['Architectural objects']}
-    add(17, 'Overlap', 'How many objects belong to BOTH sculpture and architectural objects? Count each object once. Return one count.',
-        f"SELECT COUNT(DISTINCT p.object_id) FROM {table} WHERE {p['Sculpture']} AND {p['Architectural objects']}",
-        [[len(sculpture_ids & architecture_ids)]])
-    add(18, 'Overlap', 'How many objects belong to EITHER sculpture OR architectural objects, including those in both categories? Count each object once. Return one count.',
-        f"SELECT COUNT(DISTINCT p.object_id) FROM {table} WHERE {p['Sculpture']} OR {p['Architectural objects']}",
-        [[len(sculpture_ids | architecture_ids)]])
-    add(19, 'Painting', 'How many paintings have a trimmed classification other than the exact label Paintings? Return one count.',
-        f"SELECT COUNT(DISTINCT p.object_id) FROM {table} WHERE {p['Painting']} AND BTRIM(p.classification) <> 'Paintings'",
-        [[sum(label(r) != 'Paintings' for r in selected['Painting'])]])
-    add(20, 'Furniture', 'Return object ID, title, and classification for the five furniture objects with the smallest object IDs, sorted by ID ascending.',
-        f"SELECT p.object_id, o.title, p.classification FROM {table} JOIN object o USING (object_id) WHERE {p['Furniture']} ORDER BY p.object_id LIMIT 5",
-        [[r['objectID'], r.get('title'), r.get('classification')] for r in sorted(selected['Furniture'], key=lambda r: r['objectID'])[:5]], True)
+    categories = [('Sculpture', 'sculptures'), ('Painting', 'paintings'),
+                  ('Drawing', 'drawings'), ('Print', 'prints'),
+                  ('Furniture', 'furniture objects'), ('Architectural objects', 'architectural objects')]
+    for number, (category, noun) in enumerate(categories, start=11):
+        add(number, category,
+            f'Using object_physical_properties.classification, how many {noun} are in the sample? Count each object_id once and return one count.',
+            f'SELECT COUNT(DISTINCT p.object_id) FROM {table} WHERE {p[category]}',
+            [[len(selected[category])]])
+    for number, category, noun in [(17, 'Sculpture', 'sculptures'),
+                                    (18, 'Architectural objects', 'architectural objects'),
+                                    (19, 'Painting', 'paintings'),
+                                    (20, 'Furniture', 'furniture objects')]:
+        add(number, category,
+            f'Using object_physical_properties.classification, return only the object IDs of the five {noun} with the smallest object IDs, sorted by object ID ascending.',
+            f'SELECT DISTINCT p.object_id FROM {table} WHERE {p[category]} ORDER BY p.object_id LIMIT 5',
+            [[r['objectID']] for r in sorted(selected[category], key=lambda r: r['objectID'])[:5]], True)
     return {'questions.json': questions, 'question-set.json': [q['id'] for q in questions],
             'gold/answers.json': gold, **{name + '.json': value for name, value in prompts.items()}}
 

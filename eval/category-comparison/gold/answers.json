@@ -99,47 +99,34 @@
       ]
     },
     "q11": {
-      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') AND BTRIM(p.classification) <> 'Sculpture'",
+      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture')",
       "expected": [
         [
-          145
+          296
         ]
       ]
     },
     "q12": {
-      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p JOIN object_copyright c USING (object_id) WHERE BTRIM(p.classification) IN ('Miscellaneous-Paintings', 'Paintings', 'Paintings-Fresco', 'Paintings-Panels') AND c.is_public_domain IS TRUE",
+      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Miscellaneous-Paintings', 'Paintings', 'Paintings-Fresco', 'Paintings-Panels')",
       "expected": [
         [
-          238
+          353
         ]
       ]
     },
     "q13": {
-      "sql": "SELECT g.department, COUNT(DISTINCT p.object_id) FROM object_physical_properties p JOIN object_gallery_info g USING (object_id) WHERE BTRIM(p.classification) IN ('Drawings') GROUP BY g.department ORDER BY g.department",
+      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Drawings')",
       "expected": [
         [
-          "Drawings and Prints",
-          67
-        ],
-        [
-          "European Paintings",
-          1
-        ],
-        [
-          "Modern and Contemporary Art",
-          14
-        ],
-        [
-          "Robert Lehman Collection",
-          31
+          113
         ]
       ]
     },
     "q14": {
-      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p JOIN object_copyright c USING (object_id) JOIN object_images i USING (object_id) WHERE BTRIM(p.classification) IN ('Prints') AND c.is_public_domain IS TRUE AND NULLIF(BTRIM(i.primary_image), '') IS NOT NULL",
+      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Prints')",
       "expected": [
         [
-          29
+          55
         ]
       ]
     },
@@ -160,56 +147,82 @@
       ]
     },
     "q17": {
-      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') AND BTRIM(p.classification) IN ('Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Wood-Architectural')",
+      "sql": "SELECT DISTINCT p.object_id FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') ORDER BY p.object_id LIMIT 5",
       "expected": [
         [
-          9
+          37397
+        ],
+        [
+          38124
+        ],
+        [
+          38127
+        ],
+        [
+          38133
+        ],
+        [
+          38146
         ]
       ]
     },
     "q18": {
-      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') OR BTRIM(p.classification) IN ('Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Wood-Architectural')",
+      "sql": "SELECT DISTINCT p.object_id FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Wood-Architectural') ORDER BY p.object_id LIMIT 5",
       "expected": [
         [
-          300
+          199003
+        ],
+        [
+          202115
+        ],
+        [
+          205351
+        ],
+        [
+          311294
+        ],
+        [
+          313697
         ]
       ]
     },
     "q19": {
-      "sql": "SELECT COUNT(DISTINCT p.object_id) FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Miscellaneous-Paintings', 'Paintings', 'Paintings-Fresco', 'Paintings-Panels') AND BTRIM(p.classification) <> 'Paintings'",
+      "sql": "SELECT DISTINCT p.object_id FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Miscellaneous-Paintings', 'Paintings', 'Paintings-Fresco', 'Paintings-Panels') ORDER BY p.object_id LIMIT 5",
       "expected": [
         [
-          8
+          36029
+        ],
+        [
+          36131
+        ],
+        [
+          36451
+        ],
+        [
+          36457
+        ],
+        [
+          37788
         ]
       ]
     },
     "q20": {
-      "sql": "SELECT p.object_id, o.title, p.classification FROM object_physical_properties p JOIN object o USING (object_id) WHERE BTRIM(p.classification) IN ('Furniture', 'Furniture-Wood', 'Wood-Furniture', 'Woodwork-Furniture') ORDER BY p.object_id LIMIT 5",
+      "sql": "SELECT DISTINCT p.object_id FROM object_physical_properties p WHERE BTRIM(p.classification) IN ('Furniture', 'Furniture-Wood', 'Wood-Furniture', 'Woodwork-Furniture') ORDER BY p.object_id LIMIT 5",
       "expected": [
         [
-          194622,
-          "Drop-front secretary (Secrétaire en armoire)",
-          "Woodwork-Furniture"
+          194622
         ],
         [
-          195456,
-          "The Backgammon Players",
-          "Woodwork-Furniture"
+          195456
         ],
         [
-          195473,
-          "Coin cabinet",
-          "Woodwork-Furniture"
+          195473
         ],
         [
-          198715,
-          "Rolltop desk",
-          "Woodwork-Furniture"
+          198715
         ],
         [
-          202141,
-          "Armchair (Fauteuil à la reine) (one of a pair) (part of a set)",
-          "Woodwork-Furniture"
+          202141
         ]
       ]
     }

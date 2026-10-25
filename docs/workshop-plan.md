@@ -1,8 +1,10 @@
 # Semantic contracts workshop: review proposal
 
 > **Met category comparison:** Replace the ten harder questions in a new
-> comparison set with sculpture, painting, drawing, print, furniture, and
-> architectural-object questions; retain the ten basic questions. Run the same
+> comparison set with medium sculpture, painting, drawing, print, furniture, and
+> architectural-object questions; retain the ten basic questions. Use single-table
+> category counts and ordered ID lists. Preserve the completed hard-version run
+> as historical evidence; the medium set has not had a model evaluation. Run the same
 > general prompt alone, with the local category MAP, and with that MAP plus six
 > pinned Linked Art definitions. Preserve the database, runtime, original README,
 > and historical question sets. See [the comparison](met-category-comparison.md).
