@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/linked-art/linked.art",
+  "revision": "bcbff1761e65f44eeaeb92b4b2b83da2783539f8",
+  "license": "CC BY 4.0",
+  "modified": false,
+  "files": {
+    "recommended-vocabulary.md": {
+      "path": "docs/model/vocab/recommended/index.md",
+      "source": "https://github.com/linked-art/linked.art/blob/bcbff1761e65f44eeaeb92b4b2b83da2783539f8/docs/model/vocab/recommended/index.md",
+      "sha256": "28d46804c01cd397a62b7248fdcd54c9a1c6eaf2d6fef977bfc13d0680363fe4"
+    },
+    "LICENSE": {
+      "path": "LICENSE",
+      "source": "https://github.com/linked-art/linked.art/blob/bcbff1761e65f44eeaeb92b4b2b83da2783539f8/LICENSE",
+      "sha256": "facabc4ea39e45639fa6b4d3a3be4f85a20d8409b4c2dc9442bad1453cb130a3"
+    }
+  }
+}
