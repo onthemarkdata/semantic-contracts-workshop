@@ -1,0 +1,88 @@
+{
+  "order": [
+    "prompt-only",
+    "prompt-map",
+    "prompt-map-linked-art"
+  ],
+  "scores": {
+    "prompt-only": {
+      "correct": 10,
+      "total": 20,
+      "elapsed_seconds": 136.568,
+      "sections": {
+        "basic": {
+          "correct": 9,
+          "total": 10
+        },
+        "medium": {
+          "correct": 1,
+          "total": 10
+        }
+      }
+    },
+    "prompt-map": {
+      "correct": 15,
+      "total": 20,
+      "elapsed_seconds": 249.725,
+      "sections": {
+        "basic": {
+          "correct": 5,
+          "total": 10
+        },
+        "medium": {
+          "correct": 10,
+          "total": 10
+        }
+      }
+    },
+    "prompt-map-linked-art": {
+      "correct": 16,
+      "total": 20,
+      "elapsed_seconds": 281.638,
+      "sections": {
+        "basic": {
+          "correct": 7,
+          "total": 10
+        },
+        "medium": {
+          "correct": 9,
+          "total": 10
+        }
+      }
+    }
+  },
+  "changes": [
+    {
+      "from": "prompt-only",
+      "to": "prompt-map",
+      "fixed": [
+        "q11",
+        "q12",
+        "q13",
+        "q14",
+        "q15",
+        "q16",
+        "q17",
+        "q18",
+        "q20"
+      ],
+      "regressed": [
+        "q01",
+        "q02",
+        "q03",
+        "q08"
+      ]
+    },
+    {
+      "from": "prompt-map",
+      "to": "prompt-map-linked-art",
+      "fixed": [
+        "q02",
+        "q03"
+      ],
+      "regressed": [
+        "q14"
+      ]
+    }
+  ]
+}

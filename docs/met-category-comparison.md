@@ -84,8 +84,11 @@ variants. “Medium” is an instructional choice, not a measured difficulty rat
 
 The reference answers are computed independently from the checked-in source
 JSON and verified with read-only reference SQL. The three prompts and MAP
-membership definitions are unchanged. **The medium set has not had a model
-evaluation yet.** Earlier scores belong to the hard version.
+membership definitions are unchanged. A fresh three-condition run scored
+**10/20 for prompt only, 15/20 for MAP, and 16/20 for MAP plus Linked Art**.
+The medium-question scores were 1/10, 10/10, and 9/10 respectively. See the
+[medium-run evidence](evidence/met-category-medium-eval/README.md). Earlier
+hard-version scores remain separate.
 
 ## Run the comparison
 
@@ -113,8 +116,9 @@ For each condition, inspect its `*-reports/report.json` and question traces.
 `comparison.json` groups scores by the difficulty recorded in each run, so new
 runs report basic and medium scores while historical runs retain basic and hard
 scores. It also reports fixes and regressions between conditions. The
-[recorded hard-version comparison](evidence/met-category-eval/README.md) remains
-available as historical evidence; it does not score the current medium set.
+[recorded medium comparison](evidence/met-category-medium-eval/README.md) scores
+the current questions. The [hard-version comparison](evidence/met-category-eval/README.md)
+remains available as historical evidence.
 
 ## What GitHub checks
 
@@ -132,7 +136,7 @@ conformance or curatorial validity.
 
 ## Interpret the results
 
-For the next evaluation, run all three conditions on the same medium questions.
+Run all three conditions on the same medium questions.
 Report the ten basic and ten medium scores separately, along with per-question
 errors and elapsed time. Do not compare their totals directly with the recorded
 hard-version or older 20- and 26-question results. The runner uses one run per

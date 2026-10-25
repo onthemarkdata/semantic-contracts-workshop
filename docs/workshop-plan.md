@@ -4,7 +4,8 @@
 > comparison set with medium sculpture, painting, drawing, print, furniture, and
 > architectural-object questions; retain the ten basic questions. Use single-table
 > category counts and ordered ID lists. Preserve the completed hard-version run
-> as historical evidence; the medium set has not had a model evaluation. Run the same
+> as historical evidence. The medium set now has a separate three-condition
+> [recorded evaluation](evidence/met-category-medium-eval/README.md). Run the same
 > general prompt alone, with the local category MAP, and with that MAP plus six
 > pinned Linked Art definitions. Preserve the database, runtime, original README,
 > and historical question sets. See [the comparison](met-category-comparison.md).

@@ -2,7 +2,7 @@
 
 > These scores apply to the **hard** question set at commit
 > [`31c3e83`](https://github.com/onthemarkdata/semantic-contracts-workshop/blob/31c3e83035f6496c40e2804385736c0aac702dc3/eval/category-comparison/questions.json).
-> The current questions are medium difficulty and have not had a model evaluation.
+> The current medium questions have a [separate recorded evaluation](../met-category-medium-eval/README.md).
 > The reports and scores below are preserved unchanged; they do not measure the medium set.
 
 This is one fresh run of each condition on the same 20 questions: ten unchanged basic questions and ten replacement category questions. The database and runtime were unchanged. No prompt or question was revised after inference began.
