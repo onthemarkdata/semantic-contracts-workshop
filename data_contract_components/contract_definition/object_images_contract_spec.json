@@ -64,7 +64,7 @@
     },
     "metadataApplicationProfile": {
       "id": "museum-sql-prompt-map",
-      "version": "1.3.0",
+      "version": "1.4.0",
       "title": "Museum SQL prompt metadata application profile",
       "purpose": "Describe the meaning and use of metadata in the fixed museum SQL exercise. This local application profile is not a Linked Art conformance claim.",
       "sources": [
@@ -523,6 +523,401 @@
               }
             ]
           }
+        },
+        {
+          "id": "museum-met-categories-map",
+          "version": "1.0.0",
+          "title": "Met category comparison prompt-map",
+          "purpose": "Govern prompt interpretation of six categories in the fixed Met sample, without database changes.",
+          "promptAssetResourceName": "eval/category-comparison/prompt-map.json",
+          "approved_instructions": "Translate the question into one PostgreSQL SELECT using the supplied schema. Resolve the entity, field, missing-value rule, aggregation, and requested output before writing SQL. Use the semantic rules below. After the query succeeds, copy its result rows exactly into the final answer; do not recalculate or substitute values. No retries are allowed.\nLocal Met category MAP:\nEach category selects object IDs whose classification, after PostgreSQL BTRIM, exactly matches any of its listed labels. Use the complete list, preserving spelling and word order. Do not substitute substring matching or guesses from title or medium. General artwork questions use all object records. NULL, empty and space-only classifications are unknown; other labels are unmapped, not proof of non-membership. Categories may overlap: BOTH means intersection; EITHER means union, counting each object ID once. An exclusion of an exact label still requires category membership.\nSculpture: [\"Bark-Sculpture\", \"Beads-Sculpture\", \"Bone/Ivory-Sculpture\", \"Ceramics-Sculpture\", \"Metal-Sculpture\", \"Sculpture\", \"Sculpture-Alabaster\", \"Sculpture-Architectural\", \"Sculpture-Architectural-Stone\", \"Sculpture-Bronze\", \"Sculpture-Ceramics\", \"Sculpture-Miniature\", \"Sculpture-Stone\", \"Sculpture-Wood\", \"Stone Sculpture\", \"Stone-Sculpture\", \"Wood-Sculpture\"]\nPainting: [\"Miscellaneous-Paintings\", \"Paintings\", \"Paintings-Fresco\", \"Paintings-Panels\"]\nDrawing: [\"Drawings\"]\nPrint: [\"Prints\"]\nFurniture: [\"Furniture\", \"Furniture-Wood\", \"Wood-Furniture\", \"Woodwork-Furniture\"]\nArchitectural objects: [\"Sculpture-Architectural\", \"Sculpture-Architectural-Stone\", \"Wood-Architectural\"]\nSword Furniture-Tsuba is a sword fitting, excluded from Furniture. Architectural objects include the architectural sculpture labels and Wood-Architectural. Do not infer additional memberships from titles; these are workshop agreements, not exhaustive curatorial classifications.",
+          "elements": [
+            {
+              "id": "missing_text",
+              "prompt_path": "semantics.missing_text",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "null_or_blank",
+              "applies_to": [
+                "object.artist_display_name",
+                "object_history.culture",
+                "object_physical_properties.classification",
+                "object_physical_properties.medium",
+                "object_images.primary_image"
+              ],
+              "definition": "Treat NULL and empty or whitespace-only text as missing. For populated text, use NULLIF(BTRIM(column), '') IS NOT NULL."
+            },
+            {
+              "id": "object_key",
+              "prompt_path": "semantics.object_key",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "object_id",
+              "applies_to": [
+                "*.object_id"
+              ],
+              "definition": "Join museum tables on object_id. Count artworks at the object_id grain; do not multiply counts through expansions."
+            },
+            {
+              "id": "public_domain",
+              "prompt_path": "semantics.public_domain",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "explicit_true",
+              "applies_to": [
+                "object_copyright.is_public_domain"
+              ],
+              "definition": "Public domain means is_public_domain IS TRUE. An image URL alone does not establish public-domain status."
+            },
+            {
+              "id": "ordering",
+              "prompt_path": "semantics.ordering",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "question",
+              "applies_to": [
+                "query result columns and rows"
+              ],
+              "definition": "Return only requested columns in their requested order. Follow requested sorting and tie breakers; do not add a LIMIT unless requested."
+            },
+            {
+              "id": "sample_scope",
+              "prompt_path": "semantics.sample_scope",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "object_records",
+              "applies_to": [
+                "object.object_id"
+              ],
+              "definition": "In this exercise, artwork means one museum object record identified by object.object_id. This is a local counting convention, not evidence that every collection item is classified as an artwork in Linked Art. Do not count images, tags, or conceptual works as extra objects."
+            },
+            {
+              "id": "field_meaning",
+              "prompt_path": "semantics.field_meaning",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "museum_columns",
+              "applies_to": [
+                "museum schema"
+              ],
+              "definition": "Artist name is object.artist_display_name; title is object.title; department is object_gallery_info.department; culture is object_history.culture; classification and medium are in object_physical_properties; primary image URL is object_images.primary_image; public-domain status is object_copyright.is_public_domain. Use the stated field, not a related label or proxy."
+            },
+            {
+              "id": "aggregation",
+              "prompt_path": "semantics.aggregation",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "requested_grain",
+              "applies_to": [
+                "query result grain"
+              ],
+              "definition": "For populated text use NULLIF(BTRIM(column), '') IS NOT NULL; for missing text use NULLIF(BTRIM(column), '') IS NULL. Combine conditions with AND or OR exactly as asked. For object counts count object IDs, not distinct field values. For distinct values use DISTINCT; for counts per category GROUP BY that category. Join only the tables needed, using qualified object_id columns. Preserve the requested row grain and avoid extra columns."
+            },
+            {
+              "id": "answer_values",
+              "prompt_path": "semantics.answer_values",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "query_rows",
+              "applies_to": [
+                "final.rows"
+              ],
+              "definition": "The query tool returns columns and rows. Submit only its complete rows array as the final rows value, preserving numbers, strings, NULLs, duplicates, and row order. Do not return SQL, column names, explanations, or numbers remembered from other questions."
+            }
+          ],
+          "categoryMapping": {
+            "Sculpture": [
+              "Bark-Sculpture",
+              "Beads-Sculpture",
+              "Bone/Ivory-Sculpture",
+              "Ceramics-Sculpture",
+              "Metal-Sculpture",
+              "Sculpture",
+              "Sculpture-Alabaster",
+              "Sculpture-Architectural",
+              "Sculpture-Architectural-Stone",
+              "Sculpture-Bronze",
+              "Sculpture-Ceramics",
+              "Sculpture-Miniature",
+              "Sculpture-Stone",
+              "Sculpture-Wood",
+              "Stone Sculpture",
+              "Stone-Sculpture",
+              "Wood-Sculpture"
+            ],
+            "Painting": [
+              "Miscellaneous-Paintings",
+              "Paintings",
+              "Paintings-Fresco",
+              "Paintings-Panels"
+            ],
+            "Drawing": [
+              "Drawings"
+            ],
+            "Print": [
+              "Prints"
+            ],
+            "Furniture": [
+              "Furniture",
+              "Furniture-Wood",
+              "Wood-Furniture",
+              "Woodwork-Furniture"
+            ],
+            "Architectural objects": [
+              "Sculpture-Architectural",
+              "Sculpture-Architectural-Stone",
+              "Wood-Architectural"
+            ]
+          },
+          "mappingPolicy": {
+            "field": "object_physical_properties.classification",
+            "match": "Exact label after PostgreSQL BTRIM; one object_id; complete explicit membership.",
+            "overlap": "Permitted. Intersection for both, distinct union for either.",
+            "unknown": "NULL, empty, and space-only classification.",
+            "unmapped": "Other populated classification; not proof of non-membership.",
+            "scope": "Category filters apply only to questions about those categories.",
+            "validation": "CI checks approved prompt instructions and semantic rules. Evaluation checks answers; no SQL rewrite or runtime enforcement."
+          },
+          "review": {
+            "basis": "Desk review of classification, title, and medium in the checked-in sample; no image or curator validation.",
+            "decisions": [
+              "Include Miscellaneous-Paintings and Paintings-Fresco/Panels in Painting.",
+              "Include the four explicit Furniture labels; exclude Sword Furniture-Tsuba, a sword fitting.",
+              "Architectural objects includes architectural sculpture and Wood-Architectural.",
+              "Preserve the existing 17-label Sculpture agreement. No memberships inferred from titles."
+            ],
+            "limitations": [
+              "Some architectural sculpture records are a table or a funerary figure. Source-label membership remains a local workshop proposal.",
+              "Carved or painted furniture does not gain Sculpture or Painting membership without a listed classification.",
+              "Drawing and Print each have one source label; no invented variants."
+            ]
+          }
+        },
+        {
+          "id": "museum-met-categories-map-linked-art",
+          "version": "1.0.0",
+          "title": "Met category comparison prompt-map-linked-art",
+          "purpose": "Govern prompt interpretation of six categories in the fixed Met sample, without database changes.",
+          "promptAssetResourceName": "eval/category-comparison/prompt-map-linked-art.json",
+          "approved_instructions": "Translate the question into one PostgreSQL SELECT using the supplied schema. Resolve the entity, field, missing-value rule, aggregation, and requested output before writing SQL. Use the semantic rules below. After the query succeeds, copy its result rows exactly into the final answer; do not recalculate or substitute values. No retries are allowed.\nLocal Met category MAP:\nEach category selects object IDs whose classification, after PostgreSQL BTRIM, exactly matches any of its listed labels. Use the complete list, preserving spelling and word order. Do not substitute substring matching or guesses from title or medium. General artwork questions use all object records. NULL, empty and space-only classifications are unknown; other labels are unmapped, not proof of non-membership. Categories may overlap: BOTH means intersection; EITHER means union, counting each object ID once. An exclusion of an exact label still requires category membership.\nSculpture: [\"Bark-Sculpture\", \"Beads-Sculpture\", \"Bone/Ivory-Sculpture\", \"Ceramics-Sculpture\", \"Metal-Sculpture\", \"Sculpture\", \"Sculpture-Alabaster\", \"Sculpture-Architectural\", \"Sculpture-Architectural-Stone\", \"Sculpture-Bronze\", \"Sculpture-Ceramics\", \"Sculpture-Miniature\", \"Sculpture-Stone\", \"Sculpture-Wood\", \"Stone Sculpture\", \"Stone-Sculpture\", \"Wood-Sculpture\"]\nPainting: [\"Miscellaneous-Paintings\", \"Paintings\", \"Paintings-Fresco\", \"Paintings-Panels\"]\nDrawing: [\"Drawings\"]\nPrint: [\"Prints\"]\nFurniture: [\"Furniture\", \"Furniture-Wood\", \"Wood-Furniture\", \"Woodwork-Furniture\"]\nArchitectural objects: [\"Sculpture-Architectural\", \"Sculpture-Architectural-Stone\", \"Wood-Architectural\"]\nSword Furniture-Tsuba is a sword fitting, excluded from Furniture. Architectural objects include the architectural sculpture labels and Wood-Architectural. Do not infer additional memberships from titles; these are workshop agreements, not exhaustive curatorial classifications.\nLinked Art references, embedded from the pinned local Object Types guidance:\nSculpture -> Sculpture (http://vocab.getty.edu/aat/300047090): Object created by carving or engraving a hard material or molding a malleable material\nPainting -> Painting (http://vocab.getty.edu/aat/300033618): Object created by application of colored liquid onto a surface\nDrawing -> Drawing (http://vocab.getty.edu/aat/300033973): Object created by application of lines on a surface\nPrint -> Print (http://vocab.getty.edu/aat/300041273): Objects created by transferring an image using a printing process\nFurniture -> Furniture (http://vocab.getty.edu/aat/300037680): Objects used for sitting, reclining, or storage, such as a chair or cabinet\nArchitectural objects -> Architecture (http://vocab.getty.edu/aat/300263552): Structure or part of a structure which is the result of conscious construction\nThese shared concepts identify the meanings behind the local mappings. They do not change the membership lists or create database fields. The mappings are local applications, not exact equivalence claims.",
+          "elements": [
+            {
+              "id": "missing_text",
+              "prompt_path": "semantics.missing_text",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "null_or_blank",
+              "applies_to": [
+                "object.artist_display_name",
+                "object_history.culture",
+                "object_physical_properties.classification",
+                "object_physical_properties.medium",
+                "object_images.primary_image"
+              ],
+              "definition": "Treat NULL and empty or whitespace-only text as missing. For populated text, use NULLIF(BTRIM(column), '') IS NOT NULL."
+            },
+            {
+              "id": "object_key",
+              "prompt_path": "semantics.object_key",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "object_id",
+              "applies_to": [
+                "*.object_id"
+              ],
+              "definition": "Join museum tables on object_id. Count artworks at the object_id grain; do not multiply counts through expansions."
+            },
+            {
+              "id": "public_domain",
+              "prompt_path": "semantics.public_domain",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "explicit_true",
+              "applies_to": [
+                "object_copyright.is_public_domain"
+              ],
+              "definition": "Public domain means is_public_domain IS TRUE. An image URL alone does not establish public-domain status."
+            },
+            {
+              "id": "ordering",
+              "prompt_path": "semantics.ordering",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "question",
+              "applies_to": [
+                "query result columns and rows"
+              ],
+              "definition": "Return only requested columns in their requested order. Follow requested sorting and tie breakers; do not add a LIMIT unless requested."
+            },
+            {
+              "id": "sample_scope",
+              "prompt_path": "semantics.sample_scope",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "object_records",
+              "applies_to": [
+                "object.object_id"
+              ],
+              "definition": "In this exercise, artwork means one museum object record identified by object.object_id. This is a local counting convention, not evidence that every collection item is classified as an artwork in Linked Art. Do not count images, tags, or conceptual works as extra objects."
+            },
+            {
+              "id": "field_meaning",
+              "prompt_path": "semantics.field_meaning",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "museum_columns",
+              "applies_to": [
+                "museum schema"
+              ],
+              "definition": "Artist name is object.artist_display_name; title is object.title; department is object_gallery_info.department; culture is object_history.culture; classification and medium are in object_physical_properties; primary image URL is object_images.primary_image; public-domain status is object_copyright.is_public_domain. Use the stated field, not a related label or proxy."
+            },
+            {
+              "id": "aggregation",
+              "prompt_path": "semantics.aggregation",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "requested_grain",
+              "applies_to": [
+                "query result grain"
+              ],
+              "definition": "For populated text use NULLIF(BTRIM(column), '') IS NOT NULL; for missing text use NULLIF(BTRIM(column), '') IS NULL. Combine conditions with AND or OR exactly as asked. For object counts count object IDs, not distinct field values. For distinct values use DISTINCT; for counts per category GROUP BY that category. Join only the tables needed, using qualified object_id columns. Preserve the requested row grain and avoid extra columns."
+            },
+            {
+              "id": "answer_values",
+              "prompt_path": "semantics.answer_values",
+              "required": true,
+              "max_occurs": 1,
+              "value_type": "string",
+              "required_value": "query_rows",
+              "applies_to": [
+                "final.rows"
+              ],
+              "definition": "The query tool returns columns and rows. Submit only its complete rows array as the final rows value, preserving numbers, strings, NULLs, duplicates, and row order. Do not return SQL, column names, explanations, or numbers remembered from other questions."
+            }
+          ],
+          "categoryMapping": {
+            "Sculpture": [
+              "Bark-Sculpture",
+              "Beads-Sculpture",
+              "Bone/Ivory-Sculpture",
+              "Ceramics-Sculpture",
+              "Metal-Sculpture",
+              "Sculpture",
+              "Sculpture-Alabaster",
+              "Sculpture-Architectural",
+              "Sculpture-Architectural-Stone",
+              "Sculpture-Bronze",
+              "Sculpture-Ceramics",
+              "Sculpture-Miniature",
+              "Sculpture-Stone",
+              "Sculpture-Wood",
+              "Stone Sculpture",
+              "Stone-Sculpture",
+              "Wood-Sculpture"
+            ],
+            "Painting": [
+              "Miscellaneous-Paintings",
+              "Paintings",
+              "Paintings-Fresco",
+              "Paintings-Panels"
+            ],
+            "Drawing": [
+              "Drawings"
+            ],
+            "Print": [
+              "Prints"
+            ],
+            "Furniture": [
+              "Furniture",
+              "Furniture-Wood",
+              "Wood-Furniture",
+              "Woodwork-Furniture"
+            ],
+            "Architectural objects": [
+              "Sculpture-Architectural",
+              "Sculpture-Architectural-Stone",
+              "Wood-Architectural"
+            ]
+          },
+          "mappingPolicy": {
+            "field": "object_physical_properties.classification",
+            "match": "Exact label after PostgreSQL BTRIM; one object_id; complete explicit membership.",
+            "overlap": "Permitted. Intersection for both, distinct union for either.",
+            "unknown": "NULL, empty, and space-only classification.",
+            "unmapped": "Other populated classification; not proof of non-membership.",
+            "scope": "Category filters apply only to questions about those categories.",
+            "validation": "CI checks approved prompt instructions and semantic rules. Evaluation checks answers; no SQL rewrite or runtime enforcement."
+          },
+          "review": {
+            "basis": "Desk review of classification, title, and medium in the checked-in sample; no image or curator validation.",
+            "decisions": [
+              "Include Miscellaneous-Paintings and Paintings-Fresco/Panels in Painting.",
+              "Include the four explicit Furniture labels; exclude Sword Furniture-Tsuba, a sword fitting.",
+              "Architectural objects includes architectural sculpture and Wood-Architectural.",
+              "Preserve the existing 17-label Sculpture agreement. No memberships inferred from titles."
+            ],
+            "limitations": [
+              "Some architectural sculpture records are a table or a funerary figure. Source-label membership remains a local workshop proposal.",
+              "Carved or painted furniture does not gain Sculpture or Painting membership without a listed classification.",
+              "Drawing and Print each have one source label; no invented variants."
+            ]
+          },
+          "linkedArtReferences": {
+            "Sculpture": {
+              "name": "Sculpture",
+              "uri": "http://vocab.getty.edu/aat/300047090",
+              "description": "Object created by carving or engraving a hard material or molding a malleable material"
+            },
+            "Painting": {
+              "name": "Painting",
+              "uri": "http://vocab.getty.edu/aat/300033618",
+              "description": "Object created by application of colored liquid onto a surface"
+            },
+            "Drawing": {
+              "name": "Drawing",
+              "uri": "http://vocab.getty.edu/aat/300033973",
+              "description": "Object created by application of lines on a surface"
+            },
+            "Print": {
+              "name": "Print",
+              "uri": "http://vocab.getty.edu/aat/300041273",
+              "description": "Objects created by transferring an image using a printing process"
+            },
+            "Furniture": {
+              "name": "Furniture",
+              "uri": "http://vocab.getty.edu/aat/300037680",
+              "description": "Objects used for sitting, reclining, or storage, such as a chair or cabinet"
+            },
+            "Architectural objects": {
+              "name": "Architecture",
+              "uri": "http://vocab.getty.edu/aat/300263552",
+              "description": "Structure or part of a structure which is the result of conscious construction"
+            }
+          },
+          "sources": [
+            {
+              "path": "vendor/linked-art/guidance/recommended-vocabulary.md",
+              "section": "Object Types",
+              "revision": "bcbff1761e65f44eeaeb92b4b2b83da2783539f8",
+              "license": "CC BY 4.0",
+              "modification": "Upstream names, URIs and definitions preserved. Local mappings are separate."
+            }
+          ]
         }
       ]
     }

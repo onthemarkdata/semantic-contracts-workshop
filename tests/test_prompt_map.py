@@ -26,6 +26,8 @@ def candidate(root):
     for relative in (CONTRACT, 'eval/prompts/semantic.json', 'eval/prompts/sculpture.json',
                      'eval/prompts/linked-art-sculpture.json',
                      'eval/prompts/linked-art-met-map.json',
+                     'eval/category-comparison/prompt-map.json',
+                     'eval/category-comparison/prompt-map-linked-art.json',
                      'sql_eval/prompts.py', 'scripts/check_prompt_map.py', *PROTECTED_FILES):
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
