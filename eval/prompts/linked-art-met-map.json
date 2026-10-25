@@ -1,0 +1,32 @@
+{
+  "instructions": "Translate the question into one PostgreSQL SELECT using the supplied schema. Resolve the entity, field, missing-value rule, aggregation, and requested output before writing SQL. Use the semantic rules below. After the query succeeds, copy its result rows exactly into the final answer; do not recalculate or substitute values. No retries are allowed.\nLinked Art reference, embedded from the local recommended vocabulary (Object Types):\nSculpture (http://vocab.getty.edu/aat/300047090): Object created by carving or engraving a hard material or molding a malleable material\nWorkshop application: use the supplied source-category mapping for membership.\nLocal application profile for this Met sample: the supplied sculpture_categories list is the complete operational membership rule. The Linked Art description supplies the shared concept; it does not replace these source labels or authorize guessing membership from titles, media, or materials. Material, scale, and architectural variants in that list remain included. This local mapping is not an assertion that each Met label is exactly equivalent to the shared concept.\nChoose the scope from the question. Questions about artworks or the whole sample use all object records, unless the question explicitly requests sculptures. Do not apply the sculpture list to general artwork questions.\nFor mapped sculptures, compare the trimmed classification against every label in sculpture_categories. Preserve both word orders and spelling variants: Sculpture-Wood and Wood-Sculpture are separate labels, as are Stone Sculpture, Stone-Sculpture, and Sculpture-Stone. Before submitting the query, check that none of the listed labels was omitted.\nIf the question asks for mapped sculptures other than the exact label Sculpture, apply the complete membership list AND exclude that exact label. Do not count every object outside the exact label. Unknown membership means NULL or blank classification. Unmapped means a populated classification outside the complete list; exclude NULL, empty, and space-only values from that count. Neither unknown nor unmapped establishes that an object is not a sculpture. Use the supplied schema, qualified columns, and explicit joins for every referenced table. Do not invent nested table paths or extra tables.",
+  "semantics": {
+    "missing_text": "null_or_blank",
+    "object_key": "object_id",
+    "public_domain": "explicit_true",
+    "ordering": "question",
+    "sample_scope": "object_records",
+    "field_meaning": "museum_columns",
+    "aggregation": "requested_grain",
+    "answer_values": "query_rows",
+    "sculpture_categories": [
+      "Bark-Sculpture",
+      "Beads-Sculpture",
+      "Bone/Ivory-Sculpture",
+      "Ceramics-Sculpture",
+      "Metal-Sculpture",
+      "Sculpture",
+      "Sculpture-Alabaster",
+      "Sculpture-Architectural",
+      "Sculpture-Architectural-Stone",
+      "Sculpture-Bronze",
+      "Sculpture-Ceramics",
+      "Sculpture-Miniature",
+      "Sculpture-Stone",
+      "Sculpture-Wood",
+      "Stone Sculpture",
+      "Stone-Sculpture",
+      "Wood-Sculpture"
+    ]
+  }
+}
