@@ -1,0 +1,52 @@
+{
+  "current": {
+    "correct": 12,
+    "total": 26,
+    "elapsed_seconds": 567.066
+  },
+  "semantic": {
+    "correct": 12,
+    "total": 26,
+    "elapsed_seconds": 520.912
+  },
+  "delta": 0,
+  "improvement_observed": false,
+  "fixed": [
+    "q03",
+    "q13",
+    "q20",
+    "s02"
+  ],
+  "regressed": [
+    "q09",
+    "q18",
+    "s01",
+    "s03"
+  ],
+  "conditions": {
+    "current": "local",
+    "semantic": "sculpture-only"
+  },
+  "sections": {
+    "original": {
+      "local": {
+        "correct": 9,
+        "total": 20
+      },
+      "sculpture-only": {
+        "correct": 10,
+        "total": 20
+      }
+    },
+    "sculpture": {
+      "local": {
+        "correct": 3,
+        "total": 6
+      },
+      "sculpture-only": {
+        "correct": 2,
+        "total": 6
+      }
+    }
+  }
+}

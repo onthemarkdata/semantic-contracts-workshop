@@ -1,0 +1,2134 @@
+{
+  "local": [
+    {
+      "id": "q01",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id INNER JOIN public.object_physical_properties AS T3 ON T1.object_id = T3.object_id WHERE TRIM(T3.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') AND TRIM(T3.classification) IS NOT NULL"
+      ],
+      "tool_rows": [
+        [
+          [
+            296
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          296
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q02",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 WHERE T1.artist_display_name IS NOT NULL AND TRIM(T1.artist_display_name) != '' AND TRIM(T1.artist_display_name) != ''"
+      ],
+      "tool_rows": [
+        [
+          [
+            2068
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          2068
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q03",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 LEFT JOIN public.artist AS T2 ON T1.artist_display_name = T2.artist_display_name WHERE T2.artist_display_name IS NULL OR TRIM(T2.artist_display_name) = ''"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "Only the museum tables in the supplied schema are available."
+      ]
+    },
+    {
+      "id": "q04",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_copyright AS T2 ON T1.object_id = T2.object_id WHERE T2.is_public_domain = TRUE"
+      ],
+      "tool_rows": [
+        [
+          [
+            1985
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1985
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q05",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_images AS T2 ON T1.object_id = T2.object_id WHERE T2.primary_image IS NOT NULL AND TRIM(T2.primary_image) != ''"
+      ],
+      "tool_rows": [
+        [
+          [
+            1985
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1985
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q06",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_images AS T2 ON T1.object_id = T2.object_id WHERE T2.primary_image IS NULL OR TRIM(T2.primary_image) = '';"
+      ],
+      "tool_rows": [
+        [
+          [
+            1040
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1040
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q07",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id WHERE T2.department = 'Asian Art'}```json_action_result:{"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "Could not parse the PostgreSQL query."
+      ]
+    },
+    {
+      "id": "q08",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE T2.classification IS NOT NULL AND TRIM(T2.classification) != '' AND TRIM(T2.classification) != ''"
+      ],
+      "tool_rows": [
+        [
+          [
+            1568
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1568
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q09",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT T1.object_id, T1.title FROM public.object AS T1 WHERE T1.object_id IN (SELECT object_id FROM public.object WHERE object_id IN (SELECT object_id FROM public.object ORDER BY object_id ASC LIMIT 5)) ORDER BY T1.object_id ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            35,
+            "The Adams Vase"
+          ],
+          [
+            200,
+            "Spindle-back armchair"
+          ],
+          [
+            214,
+            "Armchair"
+          ],
+          [
+            237,
+            "Armchair"
+          ],
+          [
+            282,
+            "Autumn Landscape"
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          35,
+          "The Adams Vase"
+        ],
+        [
+          200,
+          "Spindle-back armchair"
+        ],
+        [
+          214,
+          "Armchair"
+        ],
+        [
+          237,
+          "Armchair"
+        ],
+        [
+          282,
+          "Autumn Landscape"
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q10",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_history AS T2 ON T1.object_id = T2.object_id WHERE T2.culture IS NOT NULL AND TRIM(T2.culture) != '' AND TRIM(T2.culture) != ''"
+      ],
+      "tool_rows": [
+        [
+          [
+            1392
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1392
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q11",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT T2.department, COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T1.object_physical_properties.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') GROUP BY T2.department ORDER BY T2.department ASC"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "missing FROM-clause entry for table \"object_physical_properties\"\nLINE 1: ...o AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T1.object_...\n                                                             ^"
+      ]
+    },
+    {
+      "id": "q12",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT T1.department, COUNT(T1.object_id) AS public_domain_artwork_count FROM public.object_gallery_info AS T1 JOIN public.object_copyright AS T2 ON T1.object_id = T2.object_id WHERE T2.is_public_domain = TRUE GROUP BY T1.department ORDER BY T1.department ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            "Ancient Near Eastern Art",
+            68
+          ],
+          [
+            "Arms and Armor",
+            53
+          ],
+          [
+            "Asian Art",
+            235
+          ],
+          [
+            "Costume Institute",
+            27
+          ],
+          [
+            "Drawings and Prints",
+            91
+          ],
+          [
+            "Egyptian Art",
+            113
+          ],
+          [
+            "European Paintings",
+            119
+          ],
+          [
+            "European Sculpture and Decorative Arts",
+            87
+          ],
+          [
+            "Greek and Roman Art",
+            112
+          ],
+          [
+            "Islamic Art",
+            119
+          ],
+          [
+            "Medieval Art",
+            54
+          ],
+          [
+            "Modern and Contemporary Art",
+            3
+          ],
+          [
+            "Musical Instruments",
+            94
+          ],
+          [
+            "Photographs",
+            40
+          ],
+          [
+            "Robert Lehman Collection",
+            84
+          ],
+          [
+            "The American Wing",
+            328
+          ],
+          [
+            "The Cloisters",
+            58
+          ],
+          [
+            "The Libraries",
+            228
+          ],
+          [
+            "The Michael C. Rockefeller Wing",
+            72
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          "Ancient Near Eastern Art",
+          68
+        ],
+        [
+          "Arms and Armor",
+          53
+        ],
+        [
+          "Asian Art",
+          235
+        ],
+        [
+          "Costume Institute",
+          27
+        ],
+        [
+          "Drawings and Prints",
+          91
+        ],
+        [
+          "Egyptian Art",
+          113
+        ],
+        [
+          "European Paintings",
+          119
+        ],
+        [
+          "European Sculpture and Decorative Arts",
+          87
+        ],
+        [
+          "Greek and Roman Art",
+          112
+        ],
+        [
+          "Islamic Art",
+          119
+        ],
+        [
+          "Medieval Art",
+          54
+        ],
+        [
+          "Modern and Contemporary Art",
+          3
+        ],
+        [
+          "Musical Instruments",
+          94
+        ],
+        [
+          "Photographs",
+          40
+        ],
+        [
+          "Robert Lehman Collection",
+          84
+        ],
+        [
+          "The American Wing",
+          328
+        ],
+        [
+          "The Cloisters",
+          58
+        ],
+        [
+          "The Libraries",
+          228
+        ],
+        [
+          "The Michael C. Rockefeller Wing",
+          72
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q13",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT T1.department, COUNT(T2.object_id) FROM public.object_gallery_info AS T1 INNER JOIN public.object AS T2 ON T1.object_id = T2.object_id WHERE T2.artist_display_name IS NULL AND TRIM(T2.artist_display_name) = '' GROUP BY T1.department ORDER BY T1.department ASC"
+      ],
+      "tool_rows": [
+        []
+      ],
+      "submitted_rows": [],
+      "errors": []
+    },
+    {
+      "id": "q14",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT T1.department, COUNT(T2.object_id) FROM public.object_gallery_info AS T1 JOIN public.object_images AS T2 ON T1.object_id = T2.object_id WHERE T2.primary_image IS NOT NULL AND TRIM(T1.department) IS NOT NULL GROUP BY T1.department ORDER BY T1.department ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            "Ancient Near Eastern Art",
+            68
+          ],
+          [
+            "Arms and Armor",
+            53
+          ],
+          [
+            "Asian Art",
+            240
+          ],
+          [
+            "Costume Institute",
+            139
+          ],
+          [
+            "Drawings and Prints",
+            123
+          ],
+          [
+            "Egyptian Art",
+            114
+          ],
+          [
+            "European Paintings",
+            125
+          ],
+          [
+            "European Sculpture and Decorative Arts",
+            89
+          ],
+          [
+            "Greek and Roman Art",
+            112
+          ],
+          [
+            "Islamic Art",
+            120
+          ],
+          [
+            "Medieval Art",
+            54
+          ],
+          [
+            "Modern and Contemporary Art",
+            177
+          ],
+          [
+            "Musical Instruments",
+            105
+          ],
+          [
+            "Photographs",
+            111
+          ],
+          [
+            "Robert Lehman Collection",
+            98
+          ],
+          [
+            "The American Wing",
+            433
+          ],
+          [
+            "The Cloisters",
+            58
+          ],
+          [
+            "The Libraries",
+            703
+          ],
+          [
+            "The Michael C. Rockefeller Wing",
+            103
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          "Ancient Near Eastern Art",
+          68
+        ],
+        [
+          "Arms and Armor",
+          53
+        ],
+        [
+          "Asian Art",
+          240
+        ],
+        [
+          "Costume Institute",
+          139
+        ],
+        [
+          "Drawings and Prints",
+          123
+        ],
+        [
+          "Egyptian Art",
+          114
+        ],
+        [
+          "European Paintings",
+          125
+        ],
+        [
+          "European Sculpture and Decorative Arts",
+          89
+        ],
+        [
+          "Greek and Roman Art",
+          112
+        ],
+        [
+          "Islamic Art",
+          120
+        ],
+        [
+          "Medieval Art",
+          54
+        ],
+        [
+          "Modern and Contemporary Art",
+          177
+        ],
+        [
+          "Musical Instruments",
+          105
+        ],
+        [
+          "Photographs",
+          111
+        ],
+        [
+          "Robert Lehman Collection",
+          98
+        ],
+        [
+          "The American Wing",
+          433
+        ],
+        [
+          "The Cloisters",
+          58
+        ],
+        [
+          "The Libraries",
+          703
+        ],
+        [
+          "The Michael C. Rockefeller Wing",
+          103
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q15",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_copyright AS T2 ON T1.object_id = T2.object_id WHERE T2.is_public_domain = TRUE AND TRIM(T1.object_physical_properties.classification) = 'Paintings';"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "missing FROM-clause entry for table \"object_physical_properties\"\nLINE 1: ...ject_id WHERE T2.is_public_domain = TRUE AND TRIM(T1.object_...\n                                                             ^"
+      ]
+    },
+    {
+      "id": "q16",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_history AS T2 ON T1.object_id = T2.object_id WHERE T2.culture IS NOT NULL AND TRIM(T2.culture) != '' AND T2.culture != ''"
+      ],
+      "tool_rows": [
+        [
+          [
+            1392
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1392
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q17",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_images AS T2 ON T1.object_id = T2.object_id INNER JOIN public.object_copyright AS T3 ON T1.object_id = T3.object_id WHERE T2.primary_image IS NOT NULL AND T3.is_public_domain = FALSE"
+      ],
+      "tool_rows": [
+        [
+          [
+            1040
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1040
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q18",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT T2.department, COUNT(T1.object_id) AS count FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T2.department) IS NOT NULL AND TRIM(T2.department) != '' GROUP BY T2.department ORDER BY count DESC, T2.department ASC LIMIT 5"
+      ],
+      "tool_rows": [
+        [
+          [
+            "The Libraries",
+            703
+          ],
+          [
+            "The American Wing",
+            433
+          ],
+          [
+            "Asian Art",
+            240
+          ],
+          [
+            "Modern and Contemporary Art",
+            177
+          ],
+          [
+            "Costume Institute",
+            139
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          "The Libraries",
+          703
+        ],
+        [
+          "The American Wing",
+          433
+        ],
+        [
+          "Asian Art",
+          240
+        ],
+        [
+          "Modern and Contemporary Art",
+          177
+        ],
+        [
+          "Costume Institute",
+          139
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q19",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT T1.object_id, T1.title, T2.department FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id INNER JOIN public.object_copyright AS T3 ON T1.object_id = T3.object_id WHERE T3.is_public_domain = TRUE AND T1.object_id IN (SELECT object_id FROM public.object WHERE is_public_domain = TRUE ORDER BY object_id LIMIT 5) ORDER BY T1.object_id ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            200,
+            "Spindle-back armchair",
+            "The American Wing"
+          ],
+          [
+            214,
+            "Armchair",
+            "The American Wing"
+          ],
+          [
+            237,
+            "Armchair",
+            "The American Wing"
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          200,
+          "Spindle-back armchair",
+          "The American Wing"
+        ],
+        [
+          214,
+          "Armchair",
+          "The American Wing"
+        ],
+        [
+          237,
+          "Armchair",
+          "The American Wing"
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q20",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT T1.department, COUNT(DISTINCT T2.classification) AS distinct_classification_count FROM public.object_gallery_info AS T1 JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE T1.department IS NOT NULL AND TRIM(T2.classification) IS NOT NULL GROUP BY T1.department ORDER BY T1.department ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            "Ancient Near Eastern Art",
+            1
+          ],
+          [
+            "Arms and Armor",
+            21
+          ],
+          [
+            "Asian Art",
+            22
+          ],
+          [
+            "Costume Institute",
+            1
+          ],
+          [
+            "Drawings and Prints",
+            6
+          ],
+          [
+            "Egyptian Art",
+            1
+          ],
+          [
+            "European Paintings",
+            2
+          ],
+          [
+            "European Sculpture and Decorative Arts",
+            25
+          ],
+          [
+            "Greek and Roman Art",
+            12
+          ],
+          [
+            "Islamic Art",
+            18
+          ],
+          [
+            "Medieval Art",
+            21
+          ],
+          [
+            "Modern and Contemporary Art",
+            18
+          ],
+          [
+            "Musical Instruments",
+            47
+          ],
+          [
+            "Photographs",
+            6
+          ],
+          [
+            "Robert Lehman Collection",
+            11
+          ],
+          [
+            "The American Wing",
+            1
+          ],
+          [
+            "The Cloisters",
+            23
+          ],
+          [
+            "The Libraries",
+            1
+          ],
+          [
+            "The Michael C. Rockefeller Wing",
+            27
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          "Ancient Near Eastern Art",
+          1
+        ],
+        [
+          "Arms and Armor",
+          21
+        ],
+        [
+          "Asian Art",
+          22
+        ],
+        [
+          "Costume Institute",
+          1
+        ],
+        [
+          "Drawings and Prints",
+          6
+        ],
+        [
+          "Egyptian Art",
+          1
+        ],
+        [
+          "European Paintings",
+          2
+        ],
+        [
+          "European Sculpture and Decorative Arts",
+          25
+        ],
+        [
+          "Greek and Roman Art",
+          12
+        ],
+        [
+          "Islamic Art",
+          18
+        ],
+        [
+          "Medieval Art",
+          21
+        ],
+        [
+          "Modern and Contemporary Art",
+          18
+        ],
+        [
+          "Musical Instruments",
+          47
+        ],
+        [
+          "Photographs",
+          6
+        ],
+        [
+          "Robert Lehman Collection",
+          11
+        ],
+        [
+          "The American Wing",
+          1
+        ],
+        [
+          "The Cloisters",
+          23
+        ],
+        [
+          "The Libraries",
+          1
+        ],
+        [
+          "The Michael C. Rockefeller Wing",
+          27
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s01",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id INNER JOIN public.object_gallery_info AS T3 ON T1.object_id = T3.object_id WHERE TRIM(T2.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') AND TRIM(T2.classification) IS NOT NULL"
+      ],
+      "tool_rows": [
+        [
+          [
+            296
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          296
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s02",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT T1.department, COUNT(T1.object_id) AS sculpture_count FROM public.object_gallery_info AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T2.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Stone-Sculpture', 'Wood-Sculpture') AND TRIM(T2.classification) IS NOT NULL GROUP BY T1.department ORDER BY T1.department ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            "Asian Art",
+            102
+          ],
+          [
+            "European Sculpture and Decorative Arts",
+            28
+          ],
+          [
+            "Islamic Art",
+            1
+          ],
+          [
+            "Medieval Art",
+            10
+          ],
+          [
+            "Modern and Contemporary Art",
+            31
+          ],
+          [
+            "The Cloisters",
+            10
+          ],
+          [
+            "The Michael C. Rockefeller Wing",
+            65
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          "Asian Art",
+          102
+        ],
+        [
+          "European Sculpture and Decorative Arts",
+          28
+        ],
+        [
+          "Islamic Art",
+          1
+        ],
+        [
+          "Medieval Art",
+          10
+        ],
+        [
+          "Modern and Contemporary Art",
+          31
+        ],
+        [
+          "The Cloisters",
+          10
+        ],
+        [
+          "The Michael C. Rockefeller Wing",
+          65
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s03",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_copyright AS T2 ON T1.object_id = T2.object_id INNER JOIN public.object_physical_properties AS T3 ON T1.object_id = T3.object_id WHERE T2.is_public_domain = TRUE AND TRIM(T3.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture');"
+      ],
+      "tool_rows": [
+        [
+          [
+            242
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          242
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s04",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id INNER JOIN public.object_gallery_info AS T3 ON T1.object_id = T3.object_id WHERE TRIM(T2.classification) <> 'Sculpture' AND TRIM(T2.classification) IS NOT NULL AND TRIM(T2.classification) <> ''"
+      ],
+      "tool_rows": [
+        [
+          [
+            1417
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1417
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s05",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE T2.classification IS NULL OR TRIM(T2.classification) = '' OR TRIM(T2.classification) = ' '"
+      ],
+      "tool_rows": [
+        [
+          [
+            1457
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1457
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s06",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id WHERE T1.object_physical_properties.classification IS NOT NULL AND T1.object_physical_properties.classification NOT IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture');"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "missing FROM-clause entry for table \"object_physical_properties\"\nLINE 1: ...y_info AS T2 ON T1.object_id = T2.object_id WHERE T1.object_...\n                                                             ^"
+      ]
+    }
+  ],
+  "sculpture-only": [
+    {
+      "id": "q01",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T2.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') AND TRIM(T2.classification) IS NOT NULL"
+      ],
+      "tool_rows": [
+        [
+          [
+            296
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          296
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q02",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_api_metadata AS T2 ON T1.object_id = T2.object_id WHERE T1.artist_display_name IS NOT NULL AND TRIM(T1.artist_display_name) != ''"
+      ],
+      "tool_rows": [
+        [
+          [
+            2068
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          2068
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q03",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id WHERE T1.artist_display_name IS NULL OR TRIM(T1.artist_display_name) = '' OR TRIM(T1.artist_display_name) = '';"
+      ],
+      "tool_rows": [
+        [
+          [
+            957
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          957
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q04",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_copyright AS T2 ON T1.object_id = T2.object_id WHERE T2.is_public_domain = TRUE"
+      ],
+      "tool_rows": [
+        [
+          [
+            1985
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1985
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q05",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_images AS T2 ON T1.object_id = T2.object_id WHERE T2.primary_image IS NOT NULL AND TRIM(T2.primary_image) != ''"
+      ],
+      "tool_rows": [
+        [
+          [
+            1985
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1985
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q06",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_images AS T2 ON T1.object_id = T2.object_id WHERE T2.primary_image IS NULL OR TRIM(T2.primary_image) = '';"
+      ],
+      "tool_rows": [
+        [
+          [
+            1040
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1040
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q07",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id WHERE T2.department = 'Asian Art'}```json_action_result:{"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "Could not parse the PostgreSQL query."
+      ]
+    },
+    {
+      "id": "q08",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE T2.classification IS NOT NULL AND TRIM(T2.classification) != '' AND TRIM(T2.classification) != '';"
+      ],
+      "tool_rows": [
+        [
+          [
+            1568
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1568
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q09",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT T1.object_id, T1.title FROM public.object AS T1 WHERE T1.object_physical_properties.classification IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') ORDER BY T1.object_id ASC LIMIT 5"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "missing FROM-clause entry for table \"object_physical_properties\"\nLINE 1: ...bject_id, T1.title FROM public.object AS T1 WHERE T1.object_...\n                                                             ^"
+      ]
+    },
+    {
+      "id": "q10",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_history AS T2 ON T1.object_id = T2.object_id WHERE T2.culture IS NOT NULL AND TRIM(T2.culture) != ''"
+      ],
+      "tool_rows": [
+        [
+          [
+            1392
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1392
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q11",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT T2.department, COUNT(T1.object_id) AS artwork_count FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T1.object_physical_properties.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') GROUP BY T2.department ORDER BY T2.department ASC"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "missing FROM-clause entry for table \"object_physical_properties\"\nLINE 1: ...o AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T1.object_...\n                                                             ^"
+      ]
+    },
+    {
+      "id": "q12",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT T1.department, COUNT(T1.object_id) AS public_domain_artwork_count FROM public.object_gallery_info AS T1 JOIN public.object_copyright AS T2 ON T1.object_id = T2.object_id WHERE T2.is_public_domain = TRUE GROUP BY T1.department ORDER BY T1.department ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            "Ancient Near Eastern Art",
+            68
+          ],
+          [
+            "Arms and Armor",
+            53
+          ],
+          [
+            "Asian Art",
+            235
+          ],
+          [
+            "Costume Institute",
+            27
+          ],
+          [
+            "Drawings and Prints",
+            91
+          ],
+          [
+            "Egyptian Art",
+            113
+          ],
+          [
+            "European Paintings",
+            119
+          ],
+          [
+            "European Sculpture and Decorative Arts",
+            87
+          ],
+          [
+            "Greek and Roman Art",
+            112
+          ],
+          [
+            "Islamic Art",
+            119
+          ],
+          [
+            "Medieval Art",
+            54
+          ],
+          [
+            "Modern and Contemporary Art",
+            3
+          ],
+          [
+            "Musical Instruments",
+            94
+          ],
+          [
+            "Photographs",
+            40
+          ],
+          [
+            "Robert Lehman Collection",
+            84
+          ],
+          [
+            "The American Wing",
+            328
+          ],
+          [
+            "The Cloisters",
+            58
+          ],
+          [
+            "The Libraries",
+            228
+          ],
+          [
+            "The Michael C. Rockefeller Wing",
+            72
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          "Ancient Near Eastern Art",
+          68
+        ],
+        [
+          "Arms and Armor",
+          53
+        ],
+        [
+          "Asian Art",
+          235
+        ],
+        [
+          "Costume Institute",
+          27
+        ],
+        [
+          "Drawings and Prints",
+          91
+        ],
+        [
+          "Egyptian Art",
+          113
+        ],
+        [
+          "European Paintings",
+          119
+        ],
+        [
+          "European Sculpture and Decorative Arts",
+          87
+        ],
+        [
+          "Greek and Roman Art",
+          112
+        ],
+        [
+          "Islamic Art",
+          119
+        ],
+        [
+          "Medieval Art",
+          54
+        ],
+        [
+          "Modern and Contemporary Art",
+          3
+        ],
+        [
+          "Musical Instruments",
+          94
+        ],
+        [
+          "Photographs",
+          40
+        ],
+        [
+          "Robert Lehman Collection",
+          84
+        ],
+        [
+          "The American Wing",
+          328
+        ],
+        [
+          "The Cloisters",
+          58
+        ],
+        [
+          "The Libraries",
+          228
+        ],
+        [
+          "The Michael C. Rockefeller Wing",
+          72
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q13",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT T1.department, COUNT(T2.object_id) FROM public.object_gallery_info AS T1 INNER JOIN public.object AS T2 ON T1.object_id = T2.object_id WHERE T2.artist_display_name IS NULL OR TRIM(T2.artist_display_name) = '' GROUP BY T1.department ORDER BY T1.department ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            "Ancient Near Eastern Art",
+            68
+          ],
+          [
+            "Arms and Armor",
+            22
+          ],
+          [
+            "Asian Art",
+            186
+          ],
+          [
+            "Costume Institute",
+            23
+          ],
+          [
+            "Egyptian Art",
+            114
+          ],
+          [
+            "European Sculpture and Decorative Arts",
+            16
+          ],
+          [
+            "Greek and Roman Art",
+            89
+          ],
+          [
+            "Islamic Art",
+            90
+          ],
+          [
+            "Medieval Art",
+            49
+          ],
+          [
+            "Musical Instruments",
+            46
+          ],
+          [
+            "Robert Lehman Collection",
+            6
+          ],
+          [
+            "The American Wing",
+            62
+          ],
+          [
+            "The Cloisters",
+            46
+          ],
+          [
+            "The Libraries",
+            106
+          ],
+          [
+            "The Michael C. Rockefeller Wing",
+            34
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          "Ancient Near Eastern Art",
+          68
+        ],
+        [
+          "Arms and Armor",
+          22
+        ],
+        [
+          "Asian Art",
+          186
+        ],
+        [
+          "Costume Institute",
+          23
+        ],
+        [
+          "Egyptian Art",
+          114
+        ],
+        [
+          "European Sculpture and Decorative Arts",
+          16
+        ],
+        [
+          "Greek and Roman Art",
+          89
+        ],
+        [
+          "Islamic Art",
+          90
+        ],
+        [
+          "Medieval Art",
+          49
+        ],
+        [
+          "Musical Instruments",
+          46
+        ],
+        [
+          "Robert Lehman Collection",
+          6
+        ],
+        [
+          "The American Wing",
+          62
+        ],
+        [
+          "The Cloisters",
+          46
+        ],
+        [
+          "The Libraries",
+          106
+        ],
+        [
+          "The Michael C. Rockefeller Wing",
+          34
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q14",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT T1.department, COUNT(T2.object_id) FROM public.object_gallery_info AS T1 JOIN public.object_images AS T2 ON T1.object_id = T2.object_id WHERE T2.primary_image IS NOT NULL AND TRIM(T1.department) IS NOT NULL GROUP BY T1.department ORDER BY T1.department ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            "Ancient Near Eastern Art",
+            68
+          ],
+          [
+            "Arms and Armor",
+            53
+          ],
+          [
+            "Asian Art",
+            240
+          ],
+          [
+            "Costume Institute",
+            139
+          ],
+          [
+            "Drawings and Prints",
+            123
+          ],
+          [
+            "Egyptian Art",
+            114
+          ],
+          [
+            "European Paintings",
+            125
+          ],
+          [
+            "European Sculpture and Decorative Arts",
+            89
+          ],
+          [
+            "Greek and Roman Art",
+            112
+          ],
+          [
+            "Islamic Art",
+            120
+          ],
+          [
+            "Medieval Art",
+            54
+          ],
+          [
+            "Modern and Contemporary Art",
+            177
+          ],
+          [
+            "Musical Instruments",
+            105
+          ],
+          [
+            "Photographs",
+            111
+          ],
+          [
+            "Robert Lehman Collection",
+            98
+          ],
+          [
+            "The American Wing",
+            433
+          ],
+          [
+            "The Cloisters",
+            58
+          ],
+          [
+            "The Libraries",
+            703
+          ],
+          [
+            "The Michael C. Rockefeller Wing",
+            103
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          "Ancient Near Eastern Art",
+          68
+        ],
+        [
+          "Arms and Armor",
+          53
+        ],
+        [
+          "Asian Art",
+          240
+        ],
+        [
+          "Costume Institute",
+          139
+        ],
+        [
+          "Drawings and Prints",
+          123
+        ],
+        [
+          "Egyptian Art",
+          114
+        ],
+        [
+          "European Paintings",
+          125
+        ],
+        [
+          "European Sculpture and Decorative Arts",
+          89
+        ],
+        [
+          "Greek and Roman Art",
+          112
+        ],
+        [
+          "Islamic Art",
+          120
+        ],
+        [
+          "Medieval Art",
+          54
+        ],
+        [
+          "Modern and Contemporary Art",
+          177
+        ],
+        [
+          "Musical Instruments",
+          105
+        ],
+        [
+          "Photographs",
+          111
+        ],
+        [
+          "Robert Lehman Collection",
+          98
+        ],
+        [
+          "The American Wing",
+          433
+        ],
+        [
+          "The Cloisters",
+          58
+        ],
+        [
+          "The Libraries",
+          703
+        ],
+        [
+          "The Michael C. Rockefeller Wing",
+          103
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q15",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_copyright AS T2 ON T1.object_id = T2.object_id WHERE T2.is_public_domain = TRUE AND TRIM(T1.object_physical_properties.classification) = 'Paintings';"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "missing FROM-clause entry for table \"object_physical_properties\"\nLINE 1: ...ject_id WHERE T2.is_public_domain = TRUE AND TRIM(T1.object_...\n                                                             ^"
+      ]
+    },
+    {
+      "id": "q16",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_history AS T2 ON T1.object_id = T2.object_id WHERE T2.culture IS NOT NULL AND TRIM(T2.culture) != '' AND (T2.culture LIKE '%Asian%' OR T2.culture LIKE '%Asia%')"
+      ],
+      "tool_rows": [
+        [
+          [
+            3
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          3
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q17",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_images AS T2 ON T1.object_id = T2.object_id INNER JOIN public.object_copyright AS T3 ON T1.object_id = T3.object_id WHERE T2.primary_image IS NOT NULL AND T3.is_public_domain = FALSE"
+      ],
+      "tool_rows": [
+        [
+          [
+            1040
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1040
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "q18",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT T2.department, COUNT(T1.object_id) AS count FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T1.object_physical_properties.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') GROUP BY T2.department ORDER BY count DESC, T2.department ASC LIMIT 5"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "missing FROM-clause entry for table \"object_physical_properties\"\nLINE 1: ...o AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T1.object_...\n                                                             ^"
+      ]
+    },
+    {
+      "id": "q19",
+      "correct": false,
+      "status": "truncated_response",
+      "sql": [],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "The model response exceeded the output token limit."
+      ]
+    },
+    {
+      "id": "q20",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT T1.department, COUNT(DISTINCT T2.classification) FROM public.object_gallery_info AS T1 JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE T2.classification IS NOT NULL AND TRIM(T2.classification) <> '' GROUP BY T1.department ORDER BY T1.department ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            "Arms and Armor",
+            21
+          ],
+          [
+            "Asian Art",
+            22
+          ],
+          [
+            "Drawings and Prints",
+            6
+          ],
+          [
+            "European Paintings",
+            2
+          ],
+          [
+            "European Sculpture and Decorative Arts",
+            25
+          ],
+          [
+            "Greek and Roman Art",
+            12
+          ],
+          [
+            "Islamic Art",
+            18
+          ],
+          [
+            "Medieval Art",
+            21
+          ],
+          [
+            "Modern and Contemporary Art",
+            18
+          ],
+          [
+            "Musical Instruments",
+            47
+          ],
+          [
+            "Photographs",
+            6
+          ],
+          [
+            "Robert Lehman Collection",
+            11
+          ],
+          [
+            "The Cloisters",
+            23
+          ],
+          [
+            "The Michael C. Rockefeller Wing",
+            27
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          "Arms and Armor",
+          21
+        ],
+        [
+          "Asian Art",
+          22
+        ],
+        [
+          "Drawings and Prints",
+          6
+        ],
+        [
+          "European Paintings",
+          2
+        ],
+        [
+          "European Sculpture and Decorative Arts",
+          25
+        ],
+        [
+          "Greek and Roman Art",
+          12
+        ],
+        [
+          "Islamic Art",
+          18
+        ],
+        [
+          "Medieval Art",
+          21
+        ],
+        [
+          "Modern and Contemporary Art",
+          18
+        ],
+        [
+          "Musical Instruments",
+          47
+        ],
+        [
+          "Photographs",
+          6
+        ],
+        [
+          "Robert Lehman Collection",
+          11
+        ],
+        [
+          "The Cloisters",
+          23
+        ],
+        [
+          "The Michael C. Rockefeller Wing",
+          27
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s01",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T2.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') AND TRIM(T2.classification) IS NOT NULL"
+      ],
+      "tool_rows": [
+        [
+          [
+            286
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          286
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s02",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT T1.department, COUNT(T1.object_id) AS sculpture_count FROM public.object_gallery_info AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T2.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') GROUP BY T1.department ORDER BY T1.department ASC"
+      ],
+      "tool_rows": [
+        [
+          [
+            "Asian Art",
+            102
+          ],
+          [
+            "European Sculpture and Decorative Arts",
+            28
+          ],
+          [
+            "Greek and Roman Art",
+            39
+          ],
+          [
+            "Islamic Art",
+            1
+          ],
+          [
+            "Medieval Art",
+            14
+          ],
+          [
+            "Modern and Contemporary Art",
+            31
+          ],
+          [
+            "The Cloisters",
+            16
+          ],
+          [
+            "The Michael C. Rockefeller Wing",
+            65
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          "Asian Art",
+          102
+        ],
+        [
+          "European Sculpture and Decorative Arts",
+          28
+        ],
+        [
+          "Greek and Roman Art",
+          39
+        ],
+        [
+          "Islamic Art",
+          1
+        ],
+        [
+          "Medieval Art",
+          14
+        ],
+        [
+          "Modern and Contemporary Art",
+          31
+        ],
+        [
+          "The Cloisters",
+          16
+        ],
+        [
+          "The Michael C. Rockefeller Wing",
+          65
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s03",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_copyright AS T2 ON T1.object_id = T2.object_id WHERE T2.is_public_domain = TRUE AND TRIM(T1.object_physical_properties.classification) IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture');"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "missing FROM-clause entry for table \"object_physical_properties\"\nLINE 1: ...ject_id WHERE T2.is_public_domain = TRUE AND TRIM(T1.object_...\n                                                             ^"
+      ]
+    },
+    {
+      "id": "s04",
+      "correct": false,
+      "status": "wrong_result",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE TRIM(T2.classification) <> 'Sculpture' AND TRIM(T2.classification) IS NOT NULL"
+      ],
+      "tool_rows": [
+        [
+          [
+            2874
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          2874
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s05",
+      "correct": true,
+      "status": "correct",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_physical_properties AS T2 ON T1.object_id = T2.object_id WHERE T2.classification IS NULL OR TRIM(T2.classification) = '' OR TRIM(T2.classification) = ' '"
+      ],
+      "tool_rows": [
+        [
+          [
+            1457
+          ]
+        ]
+      ],
+      "submitted_rows": [
+        [
+          1457
+        ]
+      ],
+      "errors": []
+    },
+    {
+      "id": "s06",
+      "correct": false,
+      "status": "query_error",
+      "sql": [
+        "SELECT COUNT(T1.object_id) FROM public.object AS T1 INNER JOIN public.object_gallery_info AS T2 ON T1.object_id = T2.object_id WHERE T1.object_physical_properties.classification NOT IN ('Bark-Sculpture', 'Beads-Sculpture', 'Bone/Ivory-Sculpture', 'Ceramics-Sculpture', 'Metal-Sculpture', 'Sculpture', 'Sculpture-Alabaster', 'Sculpture-Architectural', 'Sculpture-Architectural-Stone', 'Sculpture-Bronze', 'Sculpture-Ceramics', 'Sculpture-Miniature', 'Sculpture-Stone', 'Sculpture-Wood', 'Stone Sculpture', 'Stone-Sculpture', 'Wood-Sculpture') AND TRIM(T1.object_physical_properties.classification) IS NOT NULL AND TRIM(T1.object_physical_properties.classification) <> ''"
+      ],
+      "tool_rows": [],
+      "submitted_rows": null,
+      "errors": [
+        "missing FROM-clause entry for table \"object_physical_properties\"\nLINE 1: ...y_info AS T2 ON T1.object_id = T2.object_id WHERE T1.object_...\n                                                             ^"
+      ]
+    }
+  ]
+}
