@@ -4,7 +4,7 @@
     "namespace": "met-museum-data",
     "dataAssetResourceName": "postgresql://postgres:5432/postgres.object_images",
     "doc": "Data contract for the object_images table containing image URLs and metadata for museum objects, including primary images, additional images, and creation timestamps.",
-    "owner": {
+"owner": {
       "name": "Data Engineering Team",
       "email": "data-eng@museum.org"
     },
