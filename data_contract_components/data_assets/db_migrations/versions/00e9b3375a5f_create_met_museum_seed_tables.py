@@ -250,14 +250,14 @@ def upgrade() -> None:
             comment=column_comment_dict["object_id"]
         ),
         sa.Column(
-            "primary_image",
+            "image",
             sa.Text,
             comment=column_comment_dict["primary_image"]
         ),
         sa.Column(
-            "additional_images",
-            ARRAY(sa.Text),
-            comment=column_comment_dict["additional_images"]
+            "is_primary_image",
+            sa.Boolean,
+            comment="Identifies if its the primary image for the object."
         ),
         sa.Column(
             "created_at",
