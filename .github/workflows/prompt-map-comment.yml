@@ -90,11 +90,5 @@ jobs:
               `The **Prompt MAP contract** check ${passed ? 'passed' : 'did not pass'}. ` +
               `When required by the target branch rules, a failed check blocks merging. This comment explains the result.\n\n` +
               `<pre>${details}</pre>\n\n[View check](${run.html_url})`;
-            const comments = await github.paginate(github.rest.issues.listComments,
-              {owner, repo, issue_number: number});
-            const existing = comments.find(c => c.user.login === 'github-actions[bot]' && c.body.startsWith(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({owner, repo, comment_id: existing.id, body});
-            } else {
-              await github.rest.issues.createComment({owner, repo, issue_number: number, body});
-            }
+            // Preserve earlier results in the PR timeline.
+            await github.rest.issues.createComment({owner, repo, issue_number: number, body});
