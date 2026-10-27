@@ -72,10 +72,11 @@ new AsyncFunction('github','context','core','require',script)(github,context,{no
         self.assertNotIn('<script>', body)
         self.assertNotIn('@someone', body)
 
-    def test_repair_updates_existing_bot_comment(self):
+    def test_repair_posts_new_comment_and_preserves_previous_result(self):
         calls = self.run_reporter(passed=True, existing=True)
-        self.assertEqual(calls[0][0], 'update')
-        self.assertEqual(calls[0][1]['comment_id'], 9)
+        self.assertEqual(calls[0][0], 'create')
+        self.assertFalse(any(kind == 'update' for kind, _ in calls))
+        self.assertEqual(calls[0][1]['issue_number'], 2)
         self.assertIn('Prompt MAP: PASS', calls[0][1]['body'])
 
     def test_stale_run_and_ambiguous_pr_cannot_comment(self):
@@ -92,9 +93,10 @@ new AsyncFunction('github','context','core','require',script)(github,context,{no
         self.assertIn('Commit: `tested`', body)
         self.assertIn('/actions/runs/42', body)
 
-    def test_internal_repair_updates_comment(self):
+    def test_internal_repair_posts_new_comment(self):
         calls = self.run_reporter(direct=True, internal=True, passed=True, existing=True)
-        self.assertEqual(calls[0][0], 'update')
+        self.assertEqual(calls[0][0], 'create')
+        self.assertFalse(any(kind == 'update' for kind, _ in calls))
         self.assertIn('Prompt MAP: PASS', calls[0][1]['body'])
 
     def test_default_branch_reporter_skips_internal_pr_to_avoid_duplicate_comments(self):
