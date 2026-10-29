@@ -315,6 +315,32 @@ def upgrade() -> None:
             server_default=sa.text("CURRENT_TIMESTAMP"),
             comment=column_comment_dict["created_at"]
         ),
+    ),
+    op.create_table(
+        "object_images_normalized",
+        sa.Column(
+            "object_id",
+            sa.Integer,
+            primary_key=True,
+            comment=column_comment_dict["object_id"]
+        ),
+        sa.Column(
+            "image",
+            sa.Text,
+            comment="URL to the image of an object (JPEG)"
+        ),
+        sa.Column(
+            "is_primary_image",
+            sa.Boolean,
+            comment="Identifies if its the primary image for the object."
+        ),
+        sa.Column(
+            "created_at",
+            sa.DateTime,
+            nullable=False,
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+            comment=column_comment_dict["created_at"]
+        ),
     )
 
 
@@ -326,5 +352,6 @@ def downgrade() -> None:
     op.drop_table("object_gallery_info")
     op.drop_table("object_tags")
     op.drop_table("object_images")
+    op.drop_table("object_images_normalized")
     op.drop_table("object_copyright")
     op.drop_table("object_api_metadata")
